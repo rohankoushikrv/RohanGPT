@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RohanGPT</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <div class="max-w-2xl mx-auto p-4">
+        <h1 class="text-2xl font-bold text-center">RohanGPT</h1>
+        <div class="text-red-500 p-2 text-center">
+            Not medical advice. Consult a licensed doctor for health concerns.
+        </div>
+        <div id="chat-box" class="h-96 border rounded overflow-y-auto p-2 bg-white"></div>
+        <input id="user-input" class="w-full p-2 border mt-2" placeholder="How can RohanGPT help?...">
+        <button id="send-btn" class="bg-blue-500 text-white p-2 rounded mt-2 w-full">Send</button>
+        <footer class="text-center p-2 text-sm">
+            © 2025 RohanGPT. Original content licensed under CC BY-SA 4.0. Powered by Gemma-2B (Apache 2.0) and open-source libraries.
+        </footer>
+    </div>
+    <script>
+        const chatBox = document.getElementById("chat-box");
+        const userInput = document.getElementById("user-input");
+        const sendBtn = document.getElementById("send-btn");
+
+        sendBtn.addEventListener("click", async () => {
+            const message = userInput.value;
+            if (!message) return;
+            chatBox.innerHTML += `<p class="text-right"><strong>You:</strong> ${message}</p>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+            try {
+                const response = await fetch("YOUR_NGROK_URL/chat", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ message })
+                });
+                const data = await response.json();
+                chatBox.innerHTML += `<p><strong>RohanGPT:</strong> ${data.response}</p>`;
+                chatBox.scrollTop = chatBox.scrollHeight;
+            } catch (error) {
+                chatBox.innerHTML += `<p class="text-red-500">Error: Could not connect to backend.</p>`;
+            }
+            userInput.value = "";
+        });
+    </script>
+</body>
+</html>
