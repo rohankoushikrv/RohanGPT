@@ -6,29 +6,38 @@
     <title>RohanGPT</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-100">
-    <div class="max-w-2xl mx-auto p-4">
-        <h1 class="text-2xl font-bold text-center">RohanGPT</h1>
-        <div class="text-red-500 p-2 text-center">
-            Not medical advice. Consult a licensed doctor for health concerns.
+<body class="bg-gray-100 flex justify-center items-center min-h-screen">
+    <div class="max-w-2xl w-full mx-auto p-6 bg-white shadow-md rounded-lg">
+        <h1 class="text-3xl font-bold text-center text-blue-600">RohanGPT</h1>
+        <p class="text-red-500 text-center text-sm mt-2">
+            ⚠️ Not medical advice. Consult a licensed doctor for health concerns.
+        </p>
+        
+        <div id="chat-box" class="h-80 border rounded-lg overflow-y-auto p-4 bg-gray-50 mt-4"></div>
+        
+        <div class="flex gap-2 mt-4">
+            <input id="user-input" class="flex-1 p-2 border rounded focus:outline-none focus:ring focus:ring-blue-300" placeholder="Ask me anything...">
+            <button id="send-btn" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition">Send</button>
         </div>
-        <div id="chat-box" class="h-96 border rounded overflow-y-auto p-2 bg-white"></div>
-        <input id="user-input" class="w-full p-2 border mt-2" placeholder="How can RohanGPT help?...">
-        <button id="send-btn" class="bg-blue-500 text-white p-2 rounded mt-2 w-full">Send</button>
-        <footer class="text-center p-2 text-sm">
-            © 2025 RohanGPT. Original content licensed under CC BY-SA 4.0. Powered by Gemma-2B (Apache 2.0) and open-source libraries.
+
+        <footer class="text-center text-sm text-gray-500 mt-4">
+            © 2025 RohanGPT | Open-source | Powered by AI & Public APIs.
         </footer>
     </div>
+
     <script>
         const chatBox = document.getElementById("chat-box");
         const userInput = document.getElementById("user-input");
         const sendBtn = document.getElementById("send-btn");
 
         sendBtn.addEventListener("click", async () => {
-            const message = userInput.value;
+            const message = userInput.value.trim();
             if (!message) return;
+
             chatBox.innerHTML += `<p class="text-right"><strong>You:</strong> ${message}</p>`;
             chatBox.scrollTop = chatBox.scrollHeight;
+            userInput.value = "";
+
             try {
                 const response = await fetch("https://rohangpt.onrender.com/chat", {
                     method: "POST",
@@ -36,12 +45,15 @@
                     body: JSON.stringify({ message })
                 });
                 const data = await response.json();
-                chatBox.innerHTML += `<p><strong>RohanGPT:</strong> ${data.response}</p>`;
-                chatBox.scrollTop = chatBox.scrollHeight;
+                chatBox.innerHTML += `<p class="text-left"><strong>RohanGPT:</strong> ${data.response}</p>`;
             } catch (error) {
-                chatBox.innerHTML += `<p class="text-red-500">Error: Could not connect to backend.</p>`;
+                chatBox.innerHTML += `<p class="text-red-500">Error: Unable to reach backend.</p>`;
             }
-            userInput.value = "";
+            chatBox.scrollTop = chatBox.scrollHeight;
+        });
+
+        userInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") sendBtn.click();
         });
     </script>
 </body>
