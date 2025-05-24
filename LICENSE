@@ -1,0 +1,7 @@
+Copyright © 2025 YourName. All rights reserved for original code and content, licensed under CC BY-SA 4.0.
+
+This project uses:
+- Gemma-2B (Apache 2.0, https://huggingface.co/google/gemma-2b-it)
+- Flask (MIT, https://flask.palletsprojects.com)
+- Transformers, PyTorch (Apache 2.0, https://huggingface.co/docs/transformers, https://pytorch.org)
+- flask-cors, pyngrok (MIT, https://github.com/pallets/flask-cors, https://github.com/ngrok/ngrok-py)
