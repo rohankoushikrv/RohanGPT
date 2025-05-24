@@ -30,7 +30,7 @@
             chatBox.innerHTML += `<p class="text-right"><strong>You:</strong> ${message}</p>`;
             chatBox.scrollTop = chatBox.scrollHeight;
             try {
-                const response = await fetch("YOUR_NGROK_URL/chat", {
+                const response = await fetch("https://rohangpt.onrender.com/chat", {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ message })
