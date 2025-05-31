@@ -7,7 +7,7 @@ app.use(cors());
 app.use(express.json());
 
 // 🔑 Replace with your real OpenRouter API key from https://openrouter.ai/keys
-const OPENROUTER_API_KEY = 'sk-your_openrouter_key_here';
+const OPENROUTER_API_KEY = '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';
 
 // 🌐 POST endpoint to handle prompt generation
 app.post('/api/generate', async (req, res) => {
@@ -17,7 +17,7 @@ app.post('/api/generate', async (req, res) => {
     const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+        'Authorization': `Bearer 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`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
