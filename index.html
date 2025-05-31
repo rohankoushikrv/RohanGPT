@@ -17,6 +17,16 @@
             width: 100vw;
             overflow: hidden;
         }
+
+        /* ✅ Ensures the icon stays at the top-left */
+        .icon-top-left {
+            position: fixed;
+            top: 50px;
+            left: 50px;
+            width: 75px; /* Adjust as needed */
+            z-index: 1000;
+        }
+
         .container {
             width: 100%;
             height: 100%;
@@ -24,6 +34,7 @@
             display: flex;
             flex-direction: column;
         }
+
         .chat-box {
             flex: 1;
             overflow-y: auto;
@@ -33,34 +44,41 @@
             border: 1px solid #333;
             box-shadow: 0px 4px 10px rgba(255,255,255,0.1);
         }
+
         .chat-container {
             display: flex;
             flex-direction: column;
             gap: 12px;
         }
+
         .message {
             padding: 12px;
             border-radius: 8px;
             max-width: 75%;
         }
+
         .user-message {
             background: #007bff;
             align-self: flex-end;
         }
+
         .bot-message {
             background: #333;
             align-self: flex-start;
             position: relative;
         }
+
         .bot-typing {
             color: gray;
             font-style: italic;
             animation: fadeInOut 1.2s infinite alternate;
         }
+
         .input-container {
             display: flex;
             margin-top: 20px;
         }
+
         input {
             flex: 1;
             padding: 12px;
@@ -69,6 +87,7 @@
             border: 1px solid #444;
             border-radius: 6px;
         }
+
         button {
             padding: 12px 20px;
             background-color: #007bff;
@@ -78,6 +97,7 @@
             cursor: pointer;
             margin-left: 10px;
         }
+
         @keyframes fadeInOut {
             0% { opacity: 0.2; }
             100% { opacity: 1; }
@@ -86,22 +106,28 @@
 </head>
 <body>
 
+    <!-- ✅ Moved icon out of <top> and correctly positioned -->
+    <img src="rohangpticon.png" alt="RohanGPT Icon" class="icon-top-left">
+	<a href="test.html">
+    <img src="rohangpticon.png" alt="RohanGPT Icon" class="icon-top-left">
+	</a>
+
     <div class="container">
-    <h1 class="text-4xl font-extrabold text-center mb-6">RohanGPT</h1>
-    <p class="text-center opacity-80 text-lg">Your AI-powered assistant, built for creativity & intelligence.</p>
+        <h1 class="text-4xl font-extrabold text-center mb-6">RohanGPT</h1>
+        <p class="text-center opacity-80 text-lg">Your AI-powered assistant, built for creativity & intelligence.</p>
 
-    <div class="chat-box" id="chatBox"></div>
+        <div class="chat-box" id="chatBox"></div>
 
-    <div class="input-container">
-        <input type="text" id="userInput" placeholder="Type your message..." />
-        <button onclick="sendMessage()">Send</button>
+        <div class="input-container">
+            <input type="text" id="userInput" placeholder="Type your message..." />
+            <button onclick="sendMessage()">Send</button>
+        </div>
+
+        <!-- ✅ License Section -->
+        <div class="license text-center mt-6 opacity-80">
+            <p><strong>MIT License</strong> © 2025 RohanGPT</p>
+        </div>
     </div>
-
-    <!-- ✅ License Section (Correct Placement) -->
-    <div class="license text-center mt-6 opacity-80">
-        <p><strong>MIT License</strong> © 2025 RohanGPT</p>
-    </div>
-</div> <!-- ✅ No extra closing div here -->
 
     <script>
         async function sendMessage() {
