@@ -23,14 +23,15 @@
             position: fixed;
             top: 50px;
             left: 50px;
-            width: 75px; /* Adjust as needed */
+            width: 75px;
             z-index: 1000;
+            transition: transform 0.3s ease-in-out;
         }
 
-	@keyframes blink {
-            0% { opacity: 0.2; }
-            100% { opacity: 1; }
+        .icon-top-left:hover {
+            transform: scale(1.1);
         }
+
         .container {
             width: 100%;
             height: 100%;
@@ -46,36 +47,48 @@
             padding: 20px;
             border-radius: 10px;
             border: 1px solid #333;
-            box-shadow: 0px 4px 10px rgba(255,255,255,0.1);
+            box-shadow: 0px 4px 10px rgba(0, 255, 204, 0.4);
         }
 
-        .chat-container {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-
+        /* ✅ Beautified response text */
         .message {
             padding: 12px;
             border-radius: 8px;
             max-width: 75%;
+            font-size: 16px;
+            animation: fadeIn 0.8s ease-in-out;
+        }
+
+        /* ✅ Added smooth fade-in animation */
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .user-message {
             background: #007bff;
             align-self: flex-end;
+            box-shadow: 0px 4px 8px rgba(255, 255, 255, 0.2);
         }
 
         .bot-message {
             background: #333;
             align-self: flex-start;
             position: relative;
+            border-left: 3px solid #00ffcc;
+            padding-left: 16px;
         }
 
+        /* ✅ Typing animation */
         .bot-typing {
             color: gray;
             font-style: italic;
-            animation: fadeInOut 1.2s infinite alternate;
+            animation: blink 1s infinite alternate;
+        }
+
+        @keyframes blink {
+            0% { opacity: 0.2; }
+            100% { opacity: 1; }
         }
 
         .input-container {
@@ -100,21 +113,22 @@
             border-radius: 6px;
             cursor: pointer;
             margin-left: 10px;
+            transition: background 0.3s ease-in-out;
         }
 
-        @keyframes fadeInOut {
-            0% { opacity: 0.2; }
-            100% { opacity: 1; }
+        button:hover {
+            background-color: #0056b3;
         }
+
     </style>
 </head>
 <body>
 
-    <!-- ✅ Moved icon out of <top> and correctly positioned -->
-    <img src="images/rohangpticon.png" alt="RohanGPT Icon" class="icon-top-left">
-	<a href="https://rohankoushikrv.github.io/RohanGPT/">
-    <img src="rohangpticon.png" alt="RohanGPT Icon" class="icon-top-left">
-	</a>
+
+    <!-- ✅ Clickable icon (redirects to homepage) -->
+    <a href="https://rohankoushikrv.github.io/RohanGPT/">
+        <img src="rohangpticon.png" alt="RohanGPT Icon" class="icon-top-left">
+    </a>
 
     <div class="container">
         <h1 class="text-4xl font-extrabold text-center mb-6">RohanGPT</h1>
