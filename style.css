@@ -1,4 +1,4 @@
-body{
+body {
             background-color: black;
             color: white;
             font-family: 'Inter', sans-serif;
@@ -112,3 +112,24 @@ body{
         button:hover {
             background-color: #0056b3;
         }
+
+       .copy-btn {
+			background-color: transparent;
+			border: 1px solid rgba(255, 255, 255, 0.3);
+			color: rgba(255, 255, 255, 0.7);
+			font-size: 14px;
+			cursor: pointer;
+			padding: 5px 10px;
+			transition: all 0.3s ease-in-out;
+			position: absolute;
+			right: 10px; /* ✅ Moves the button to the right */
+			bottom: 5px;
+		}
+
+		.copy-btn:hover {
+			background-color: rgba(255, 255, 255, 0.1);
+			border-color: rgba(255, 255, 255, 0.8);
+			color: white;
+}
+
+}
