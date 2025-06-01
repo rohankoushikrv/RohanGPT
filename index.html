@@ -190,7 +190,7 @@
 				.join("");  
 
                 document.getElementById("typingIndicator").remove(); // Remove typing animation
-                chatBox.innerHTML += `<div class="message bot-message">RohanGPT: ${aiResponse}</div>`;
+                chatBox.innerHTML += `<div class="message bot-message"><strong>RohanGPT</strong> ${aiResponse}</div>`;
                 chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
 
             } catch (error) {
