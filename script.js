@@ -49,7 +49,7 @@ async function generateBotResponse(userInput) {
         document.getElementById("typingIndicator").remove(); 
         chatBox.innerHTML += `
             <div class="message bot-message">
-                RohanGPT: ${aiResponse}
+                <strong>RohanGPT</strong> ${aiResponse}
                 <button class="copy-btn" onclick="copyMessage(this)">📋 Copy</button>
             </div>
         `;
