@@ -22,7 +22,7 @@ async function generateBotResponse(userInput) {
     chatBox.innerHTML += typingIndicator;
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    const url = `https://your-proxy-server.com/api/gemini`; // Replace with your proxy server URL
+    const url = `https://your-proxy-server.com/api/gemini`;
 
     const requestBody = {
         contents: [{ parts: [{ text: userInput }] }]
