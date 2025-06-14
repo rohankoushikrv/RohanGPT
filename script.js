@@ -22,8 +22,7 @@ async function generateBotResponse(userInput) {
     chatBox.innerHTML += typingIndicator;
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    const apiKey = "AIzaSyB_lP7hIYkIF899gcx8yJleInuWpjqfXM8"; // Replace with a valid API key
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    const url = `https://your-proxy-server.com/api/gemini`; // Replace with your proxy server URL
 
     const requestBody = {
         contents: [{ parts: [{ text: userInput }] }]
@@ -46,10 +45,10 @@ async function generateBotResponse(userInput) {
             .map(paragraph => `<p>${paragraph}</p>`)
             .join("");  
 
-        document.getElementById("typingIndicator").remove(); 
+        document.getElementById("typingIndicator").remove();
         chatBox.innerHTML += `
             <div class="message bot-message">
-                <strong>RohanGPT</strong> ${aiResponse}
+                <strong>RohanGPT</strong>: ${aiResponse}
                 <button class="copy-btn" onclick="copyMessage(this)">📋 Copy</button>
             </div>
         `;
@@ -57,7 +56,7 @@ async function generateBotResponse(userInput) {
 
     } catch (error) {
         console.error("Error:", error);
-        document.getElementById("typingIndicator").remove(); 
+        document.getElementById("typingIndicator").remove();
         chatBox.innerHTML += `<div class="message bot-message">AI: Failed to fetch response.</div>`;
     }
 }
