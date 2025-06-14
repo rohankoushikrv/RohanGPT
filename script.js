@@ -1,35 +1,33 @@
-async function generateBotResponse(userInput) {
+async function generateBotResponse(userInput) {Add commentMore actions
     const chatBox = document.getElementById("chatBox");
     const typingIndicator = `<div class="message bot-message bot-typing" id="typingIndicator"> RohanGPT is typing...</div>`;
     chatBox.innerHTML += typingIndicator;
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    // Normalize input for better matching
+    // Convert user input to lowercase for better matching
     const normalizedInput = userInput.toLowerCase().trim();
 
-    // Predefined responses with flexibility
-    const predefinedResponses = [
-        { keywords: ["who is rohan koushik gajulapalle"], response: "Rohan Koushik Gajulapalle is a Senior Software Engineer, He works on Gen AI projects, I'm also a part of those projects, He only created me." },
-        { keywords: ["where do you live", "where are you located"], response: "I live in Rohan's cloud." },
-        { keywords: ["who created you", "who made you"], response: "Rohan Koushik Gajulapalle only created me." }
-    ];
+    // Predefined responses
+    const predefinedResponses = {
+        "who is Rohan Koushik Gajulapalle": "Rohan Koushik Gajulapalle is a Senior Software Enginner, Working in Gen AI projects, I'm a part of his Gen AI Projects, he only created me.",
+        "where do you live": "I live in Rohan's cloud.",
+        "who created you": "Rohan Koushik Gajulapalle created me."
+    };
 
-    // Check if the input contains a predefined question
-    for (const item of predefinedResponses) {
-        if (item.keywords.some(keyword => normalizedInput.includes(keyword))) {
-            document.getElementById("typingIndicator").remove();
-            chatBox.innerHTML += `
-                <div class="message bot-message">
-                    <strong>RohanGPT</strong>: ${item.response}
-                </div>
-            `;
-            chatBox.scrollTop = chatBox.scrollHeight;
-            return;
-        }
+    // Check if the input matches a predefined question
+    if (predefinedResponses[normalizedInput]) {
+        document.getElementById("typingIndicator").remove();
+        chatBox.innerHTML += `
+            <div class="message bot-message">
+                <strong>RohanGPT</strong>: ${predefinedResponses[normalizedInput]}
+            </div>
+        `;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        return;
     }
 
     // If input isn't predefined, call the API
-    const url = `https://your-proxy-server.com/api/gemini`;
+    const url = `https://your-proxy-server.com/api/gemini`; // Use a proxy to secure API calls
 
     const requestBody = {
         contents: [{ parts: [{ text: userInput }] }]
@@ -55,7 +53,7 @@ async function generateBotResponse(userInput) {
         document.getElementById("typingIndicator").remove();
         chatBox.innerHTML += `
             <div class="message bot-message">
-                <strong>RohanGPT</strong>: ${aiResponse}
+                <strong>RohanGPT</strong> ${aiResponse}
                 <button class="copy-btn" onclick="copyMessage(this)">📋 Copy</button>
             </div>
         `;
