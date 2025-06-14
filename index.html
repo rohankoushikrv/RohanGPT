@@ -7,33 +7,28 @@
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
 </head>
-<body>
+<body class="flex flex-col min-h-screen">
 
     <a href="https://rohankoushikrv.github.io/RohanGPT/">
         <img src="rohangpticon.png" alt="RohanGPT Icon" class="icon-top-left">
     </a>
 
-    <div class="container">
+    <div class="container flex-grow">
         <h1 class="text-4xl font-extrabold text-center mb-6">RohanGPT</h1>
         <p class="text-center opacity-80 text-lg">An AI-powered assistant, built for creativity & intelligence.</p>
 
         <div class="chat-box" id="chatBox"></div>
 
         <div class="input-container">
-            <input type="text" id="userInput" placeholder=" Message RohanGPT..." />
+            <input type="text" id="userInput" placeholder="Message RohanGPT..." />
             <button onclick="sendMessage()">Send</button>
         </div>
+    </div>
 
-        <div class="license text-center mt-6 opacity-80 flex justify-center items-center">
-    <p><strong>Open Source License</strong> © 2025 RohanGPT</p>
-</div>
-
+    <div class="license text-center opacity-80 mt-auto p-4">
+        <p><strong>Open Source License</strong> © 2025 RohanGPT</p>
     </div>
 
     <script src="script.js"></script>
 </body>
- <!--<title>RohanGPT</title>
-<body>
-    <h1>503 Service Unavailable</h1>
-    <p></p><h2>RohanGPT is in under Maintenance</h2></p></body>-->
 </html>
