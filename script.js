@@ -1,29 +1,33 @@
-async function sendMessage() {
-    const userInput = document.getElementById("userInput").value.trim();
-    const chatBox = document.getElementById("chatBox");
-
-    if (!userInput) return;
-
-    chatBox.innerHTML += `
-        <div class="message user-message">
-            You: ${userInput}
-        </div>
-    `;
-
-    document.getElementById("userInput").value = "";
-    chatBox.scrollTop = chatBox.scrollHeight;
-
-    generateBotResponse(userInput);
-}
-
 async function generateBotResponse(userInput) {
     const chatBox = document.getElementById("chatBox");
-    const typingIndicator = `<div class="message bot-message bot-typing" id="typingIndicator">RohanGPT is typing...</div>`;
+    const typingIndicator = `<div class="message bot-message bot-typing" id="typingIndicator"> RohanGPT is typing...</div>`;
     chatBox.innerHTML += typingIndicator;
     chatBox.scrollTop = chatBox.scrollHeight;
 
-    const apiKey = "AIzaSyB_lP7hIYkIF899gcx8yJleInuWpjqfXM8"; // Replace with a valid API key
-    const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+    // Convert user input to lowercase for better matching
+    const normalizedInput = userInput.toLowerCase().trim();
+
+    // Predefined responses
+    const predefinedResponses = {
+        "who is rohan koushik gajulapalle": "Rohan Koushik Gajulapalle only created me.",
+        "where do you live": "I live in Rohan's cloud.",
+        "who created you": "Rohan Koushik Gajulapalle only created me."
+    };
+
+    // Check if the input matches a predefined question
+    if (predefinedResponses[normalizedInput]) {
+        document.getElementById("typingIndicator").remove();
+        chatBox.innerHTML += `
+            <div class="message bot-message">
+                <strong>RohanGPT</strong>: ${predefinedResponses[normalizedInput]}
+            </div>
+        `;
+        chatBox.scrollTop = chatBox.scrollHeight;
+        return;
+    }
+
+    // If input isn't predefined, call the API
+    const url = `https://your-proxy-server.com/api/gemini`; // Use a proxy to secure API calls
 
     const requestBody = {
         contents: [{ parts: [{ text: userInput }] }]
@@ -46,10 +50,10 @@ async function generateBotResponse(userInput) {
             .map(paragraph => `<p>${paragraph}</p>`)
             .join("");  
 
-        document.getElementById("typingIndicator").remove(); 
+        document.getElementById("typingIndicator").remove();
         chatBox.innerHTML += `
             <div class="message bot-message">
-                RohanGPT ${aiResponse}
+                <strong>RohanGPT</strong> ${aiResponse}
                 <button class="copy-btn" onclick="copyMessage(this)">📋 Copy</button>
             </div>
         `;
@@ -57,21 +61,7 @@ async function generateBotResponse(userInput) {
 
     } catch (error) {
         console.error("Error:", error);
-        document.getElementById("typingIndicator").remove(); 
-        chatBox.innerHTML += `<div class="message bot-message">RohanGPT: Failed to fetch response.</div>`;
+        document.getElementById("typingIndicator").remove();
+        chatBox.innerHTML += `<div class="message bot-message">RohanGPT Failed to fetch response.</div>`;
     }
 }
-
-function copyMessage(button) {
-    const textToCopy = button.parentElement.innerText.replace("📋 Copy", "").trim();
-    navigator.clipboard.writeText(textToCopy).then(() => {
-        button.innerText = "✅ Copied!";
-        setTimeout(() => button.innerText = "📋 Copy", 2000);
-    }).catch(err => console.error("Copy failed:", err));
-}
-
-document.getElementById("userInput").addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-        sendMessage();
-    }
-});
