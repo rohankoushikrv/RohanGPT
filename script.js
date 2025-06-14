@@ -57,7 +57,7 @@ async function generateBotResponse(userInput) {
     } catch (error) {
         console.error("Error:", error);
         document.getElementById("typingIndicator").remove();
-        chatBox.innerHTML += `<div class="message bot-message">AI: Failed to fetch response.</div>`;
+        chatBox.innerHTML += `<div class="message bot-message">RohanGPT Failed to fetch response.</div>`;
     }
 }
 
