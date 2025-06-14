@@ -1,76 +1,44 @@
 async function sendMessage() {
-    const userInput = document.getElementById("userInput").value.trim();
-    const chatBox = document.getElementById("chatBox");
+            const userInput = document.getElementById("userInput").value;
+            const chatBox = document.getElementById("chatBox");
 
-    if (!userInput) return;
+            if (!userInput.trim()) return;
 
-    chatBox.innerHTML += `
-        <div class="message user-message">
-            You: ${userInput}
-        </div>
-    `;
+            chatBox.innerHTML += `<div class="message user-message">You: ${userInput}</div>`;
+            document.getElementById("userInput").value = "";
 
-    document.getElementById("userInput").value = "";
-    chatBox.scrollTop = chatBox.scrollHeight;
+            // Show typing animation
+            const typingAnimation = `<div class="message bot-message bot-typing" id="typingIndicator">Bot is typing...</div>`;
+            chatBox.innerHTML += typingAnimation;
+            chatBox.scrollTop = chatBox.scrollHeight;
 
-    generateBotResponse(userInput);
-}
+            const apiKey = "AIzaSyB_lP7hIYkIF899gcx8yJleInuWpjqfXM8"; // Replace with your Gemini API key
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
 
-async function generateBotResponse(userInput) {
-    const chatBox = document.getElementById("chatBox");
-    const typingIndicator = `<div class="message bot-message bot-typing" id="typingIndicator"> RohanGPT is typing...</div>`;
-    chatBox.innerHTML += typingIndicator;
-    chatBox.scrollTop = chatBox.scrollHeight;
+            const requestBody = {
+                contents: [{ parts: [{ text: userInput }] }]
+            };
 
-    const url = `https://your-proxy-server.com/api/gemini`;
+            try {
+                const response = await fetch(url, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(requestBody)
+                });
 
-    const requestBody = {
-        contents: [{ parts: [{ text: userInput }] }]
-    };
+                const data = await response.json();
+                console.log(data);
 
-    try {
-        const response = await fetch(url, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestBody)
-        });
+                let aiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "Sorry, I couldn't understand.";
+                aiResponse = aiResponse.replace(/\*\*/g, '').replace(/\*/g, '');
 
-        const data = await response.json();
-        let aiResponse = data?.candidates?.[0]?.content?.parts?.[0]?.text ?? "Sorry, I couldn't understand.";
+                document.getElementById("typingIndicator").remove(); // Remove typing animation
+                chatBox.innerHTML += `<div class="message bot-message">AI: ${aiResponse}</div>`;
+                chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to latest message
 
-        aiResponse = aiResponse
-            .replace(/\*\*/g, '')  
-            .replace(/\*/g, '')    
-            .split("\n")           
-            .map(paragraph => `<p>${paragraph}</p>`)
-            .join("");  
-
-        document.getElementById("typingIndicator").remove();
-        chatBox.innerHTML += `
-            <div class="message bot-message">
-                <strong>RohanGPT</strong>: ${aiResponse}
-                <button class="copy-btn" onclick="copyMessage(this)">📋 Copy</button>
-            </div>
-        `;
-        chatBox.scrollTop = chatBox.scrollHeight;
-
-    } catch (error) {
-        console.error("Error:", error);
-        document.getElementById("typingIndicator").remove();
-        chatBox.innerHTML += `<div class="message bot-message">AI: Failed to fetch response.</div>`;
-    }
-}
-
-function copyMessage(button) {
-    const textToCopy = button.parentElement.innerText.replace("📋 Copy", "").trim();
-    navigator.clipboard.writeText(textToCopy).then(() => {
-        button.innerText = "✅ Copied!";
-        setTimeout(() => button.innerText = "📋 Copy", 2000);
-    }).catch(err => console.error("Copy failed:", err));
-}
-
-document.getElementById("userInput").addEventListener("keypress", function(event) {
-    if (event.key === "Enter") {
-        sendMessage();
-    }
-});
+            } catch (error) {
+                console.error("Error:", error);
+                document.getElementById("typingIndicator").remove(); // Remove typing animation
+                chatBox.innerHTML += `<div class="message bot-message">AI: Failed to fetch response.</div>`;
+            }
+        }
