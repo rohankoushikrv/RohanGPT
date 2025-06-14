@@ -1,6 +1,6 @@
 # RohanGPT
 
-MIT License
+Open Source License
 
 Copyright (c) 2025 RohanGPT
 
