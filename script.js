@@ -9,7 +9,7 @@ async function generateBotResponse(userInput) {
 
     // Predefined responses with flexibility
     const predefinedResponses = [
-        { keywords: ["who is rohan koushik gajulapalle"], response: "Rohan Koushik Gajulapalle only created me." },
+        { keywords: ["who is rohan koushik gajulapalle"], response: "Rohan Koushik Gajulapalle is a Senior Software Engineer, He works on Gen AI projects, I'm also a part of those projects, He only created me." },
         { keywords: ["where do you live", "where are you located"], response: "I live in Rohan's cloud." },
         { keywords: ["who created you", "who made you"], response: "Rohan Koushik Gajulapalle only created me." }
     ];
