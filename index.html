@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!--<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -31,4 +31,78 @@
 
     <script src="script.js"></script>
 </body>
+</html>-->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Under Maintenance</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6; /* Light gray background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 1rem; /* Padding for small screens */
+            box-sizing: border-box;
+        }
+        .container {
+            max-width: 4xl; /* Max width for larger screens */
+            width: 100%; /* Full width on smaller screens */
+            text-align: center;
+            background-color: #ffffff; /* White background for the content box */
+            padding: 2.5rem; /* Spacious padding */
+            border-radius: 1.5rem; /* More rounded corners */
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem; /* Space between elements */
+            align-items: center; /* Center items vertically */
+        }
+        h1 {
+            color: #ef4444; /* Red for error message */
+            font-size: 2.5rem; /* Large heading */
+            font-weight: 700; /* Bold */
+            line-height: 1.2;
+            margin-bottom: 0.5rem; /* Space below heading */
+        }
+        p {
+            color: #4b5563; /* Dark gray for text */
+            font-size: 1.125rem; /* Readable paragraph text */
+            line-height: 1.6;
+        }
+        .error-code {
+            color: #ef4444; /* Red for the 500 code */
+            font-weight: 600;
+            margin-top: -0.5rem; /* Adjust spacing */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Maintenance Icon/Emoji (Optional, can be replaced with an SVG or image) -->
+        <div class="text-6xl mb-4" role="img" aria-label="Wrench and Gear">
+            ⚙️
+        </div>
+        <h1 class="text-red-600 sm:text-5xl text-4xl">Hey! We're Under Maintenance.</h1>
+        <p class="text-gray-700 text-xl error-code">Internal Server Error: 500</p>
+        <p class="text-gray-600 text-lg">
+            We're working hard to get things back up and running as quickly as possible.
+            We appreciate your patience and apologize for any inconvenience!
+        </p>
+        <p class="text-gray-600 text-base">
+            Please check back again shortly.
+        </p>
+    </div>
+</body>
 </html>
+
+
