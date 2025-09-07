@@ -3,6 +3,7 @@
 Open Source License
 
 Copyright (c) 2025 RohanGPT
+
 RohanGPT is an AI-powered assistant. While it strives to provide accurate and helpful information,
 it may occasionally produce errors or incomplete responses. 
 Users are advised to verify critical information independently. 
