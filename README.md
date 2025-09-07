@@ -3,7 +3,10 @@
 Open Source License
 
 Copyright (c) 2025 RohanGPT
-
+RohanGPT is an AI-powered assistant. While it strives to provide accurate and helpful information,
+it may occasionally produce errors or incomplete responses. 
+Users are advised to verify critical information independently. 
+The website owner shall not be held liable for any reliance placed on AI-generated content.
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
 in the Software without restriction, including without limitation the rights
