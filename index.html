@@ -1,108 +1,69 @@
-<!--<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RohanGPT</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body class="flex flex-col min-h-screen">
-
-    <a href="https://rohankoushikrv.github.io/RohanGPT/">
-        <img src="rohangpticon.png" alt="RohanGPT Icon" class="icon-top-left">
-    </a>
-
-    <div class="container flex-grow">
-        <h1 class="text-4xl font-extrabold text-center mb-6">RohanGPT</h1>
-        <p class="text-center opacity-80 text-lg">An AI-powered assistant, built for creativity & intelligence.</p>
-
-        <div class="chat-box" id="chatBox"></div>
-
-        <div class="input-container">
-            <input type="text" id="userInput" placeholder="Message RohanGPT..." />
-            <button onclick="sendMessage()">Send</button>
-        </div>
-    </div>
-
-    <div class="license text-center opacity-80 mt-auto p-4">
-        <p><strong>Open Source License</strong> © 2025 RohanGPT</p>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>-->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Under Maintenance</title>
-    <!-- Tailwind CSS CDN -->
+    <title>RohanGPT</title>
+    <!-- Tailwind CSS for styling -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #f3f4f6; /* Light gray background */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 1rem; /* Padding for small screens */
-            box-sizing: border-box;
-        }
-        .container {
-            max-width: 4xl; /* Max width for larger screens */
-            width: 100%; /* Full width on smaller screens */
-            text-align: center;
-            background-color: #ffffff; /* White background for the content box */
-            padding: 2.5rem; /* Spacious padding */
-            border-radius: 1.5rem; /* More rounded corners */
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05); /* Subtle shadow */
-            display: flex;
-            flex-direction: column;
-            gap: 1.5rem; /* Space between elements */
-            align-items: center; /* Center items vertically */
-        }
-        h1 {
-            color: #ef4444; /* Red for error message */
-            font-size: 2.5rem; /* Large heading */
-            font-weight: 700; /* Bold */
-            line-height: 1.2;
-            margin-bottom: 0.5rem; /* Space below heading */
-        }
-        p {
-            color: #4b5563; /* Dark gray for text */
-            font-size: 1.125rem; /* Readable paragraph text */
-            line-height: 1.6;
-        }
-        .error-code {
-            color: #ef4444; /* Red for the 500 code */
-            font-weight: 600;
-            margin-top: -0.5rem; /* Adjust spacing */
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <!-- Maintenance Icon/Emoji (Optional, can be replaced with an SVG or image) -->
-        <div class="text-6xl mb-4" role="img" aria-label="Wrench and Gear">
-            ⚙️
-        </div>
-        <h1 class="text-red-600 sm:text-5xl text-4xl">Hey! We're Under Maintenance.</h1>
-        <p class="text-gray-700 text-xl error-code">Internal Server Error: 500</p>
-        <p class="text-gray-600 text-lg">
-            We're working hard to get things back up and running as quickly as possible.
-            We appreciate your patience and apologize for any inconvenience!
-        </p>
-        <p class="text-gray-600 text-base">
-            Please check back again shortly.
-        </p>
+    <!-- Showdown library to render Markdown responses -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.1.0/showdown.min.js"></script>
+    <!-- Custom Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+     <link rel="stylesheet" type="text/css" href="style.css">
+    </head>
+<body class="text-gray-200">
+    <div id="app" class="flex flex-col h-screen max-w-3xl mx-auto p-4">
+        <!-- Header -->
+        <header class="flex items-center justify-between pb-4 border-b border-gray-800 animate-slide-down">
+            <div class="flex items-center gap-3">
+                 <img src="https://raw.githubusercontent.com/rohankoushikrv/RohanGPT/a08e663014ce5cf00ea916c8cd1fed5ce9dbe7bf/rohangpticon.png" alt="RohanGPT" class="w-10 h-10" />
+                <h1 class="text-2xl font-bold text-gray-100">RohanGPT</h1>
+            </div>
+            <div class="flex items-center gap-2">
+                <button id="summarize-btn" class="tooltip text-gray-400 hover:text-indigo-400 transition-colors p-2 rounded-full hover:bg-gray-800">
+                    <span class="tooltiptext">Summarize Chat</span>
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25H12" /></svg>
+                </button>
+                 <button id="clear-btn" class="tooltip text-gray-400 hover:text-red-500 transition-colors p-2 rounded-full hover:bg-gray-800">
+                    <span class="tooltiptext">Clear Chat</span>
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" /></svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Chat messages container -->
+        <main id="chat-container" class="flex-1 overflow-y-auto py-6 space-y-6">
+             <!-- Initial greeting will be added by JS -->
+        </main>
+
+        <!-- Input form -->
+        <footer class="pt-4 border-t border-gray-800 animate-slide-up">
+            <form id="chat-form" class="bg-gray-800 rounded-full flex items-center p-2 transition-all duration-300 focus-within:ring-2 focus-within:ring-indigo-500">
+                <button type="button" id="suggest-btn" class="tooltip text-gray-400 hover:text-indigo-400 transition-colors p-2 rounded-full hover:bg-gray-700 ml-1">
+                    <span class="tooltiptext">Suggest Reply ✨</span>
+                    <svg class="w-5 h-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456zM16.898 20.572L16.5 21.75l-.398-1.178a3.375 3.375 0 00-2.456-2.456L12.5 18l1.178-.398a3.375 3.375 0 002.456-2.456L16.5 14.25l.398 1.178a3.375 3.375 0 002.456 2.456L20.5 18l-1.178.398a3.375 3.375 0 00-2.456 2.456z" /></svg>
+                </button>
+                <textarea id="message-input"
+                    class="flex-1 bg-transparent px-4 py-2 resize-none focus:outline-none placeholder-gray-500"
+                    placeholder="Message RohanGPT..." rows="1"></textarea>
+                <button type="submit" id="send-button"
+                    class="bg-indigo-600 text-white rounded-full p-2.5 ml-2 hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-gray-800 focus:ring-indigo-500 transition-all duration-300 transform hover:scale-110 disabled:bg-gray-600 disabled:scale-100 disabled:cursor-not-allowed">
+                     <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-8.707l-3-3a1 1 0 00-1.414 1.414L10.586 9H7a1 1 0 100 2h3.586l-1.293 1.293a1 1 0 101.414 1.414l3-3a1 1 0 000-1.414z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </form>
+            <div class="text-center text-xs text-gray-500 mt-4">
+    RohanGPT generates AI content, maybe incorrect.
+</div>
+
+        </footer>
     </div>
-</body>
-</html>
-
-
+    <body>
+        <!-- Your HTML content -->
+        <script src="script.js"></script>
+    </body>
+    </html>
