@@ -824,3 +824,33 @@ button:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-
     outline: 1.5px solid var(--border-focus) !important;
     outline-offset: 3px !important;
 }
+
+/* ========== LOGO FALLBACK IMAGE SWITCHING & RECREATION ANIMATIONS ========== */
+
+.fallback-logo-img:not([style*="display: none"]) ~ .rohan-glow-svg {
+    display: none !important;
+}
+
+@keyframes bounceGlow {
+    0%, 100% {
+        transform: translateY(0) scale(1);
+        filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.3));
+    }
+    50% {
+        transform: translateY(-6px) scale(1.03);
+        filter: drop-shadow(0 0 22px rgba(6, 182, 212, 0.5));
+    }
+}
+
+.logo-symbol-container svg {
+    animation: sidebarPulseGlow 3.5s ease-in-out infinite;
+}
+
+@keyframes sidebarPulseGlow {
+    0%, 100% {
+        filter: drop-shadow(0 0 4px rgba(124, 58, 237, 0.25));
+    }
+    50% {
+        filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.45));
+    }
+}

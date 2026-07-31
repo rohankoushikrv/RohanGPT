@@ -15,7 +15,32 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
                 <div class="sidebar-logo">
-                    <span class="logo-symbol">𝕏</span>
+                    <div class="logo-symbol-container" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+                            <defs>
+                                <linearGradient id="neon-grad-sidebar" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#ffffff" />
+                                    <stop offset="30%" stop-color="#a78bfa" />
+                                    <stop offset="70%" stop-color="#3b82f6" />
+                                    <stop offset="100%" stop-color="#06b6d4" />
+                                </linearGradient>
+                                <filter id="neon-glow-sidebar" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feGaussianBlur stdDeviation="3.5" result="blur" />
+                                    <feMerge>
+                                        <feMergeNode in="blur" />
+                                        <feMergeNode in="blur" />
+                                        <feMergeNode in="SourceGraphic" />
+                                    </feMerge>
+                                </filter>
+                            </defs>
+                            <path d="M35,38 C28,38 24,44 26,52 C22,56 22,64 28,68 C34,72 40,70 42,66 C46,70 54,70 58,66 C62,70 70,68 72,62 C74,54 70,48 64,48 C66,42 62,36 54,36 C48,36 44,40 42,44 C38,40 36,38 35,38 Z" stroke="url(#neon-grad-sidebar)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-sidebar)" opacity="0.65" />
+                            <path d="M38,68 V46 C38,46 45,40 54,46 C62,50 58,58 48,58 H38 M48,58 L58,68" stroke="url(#neon-grad-sidebar)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-sidebar)" />
+                            <circle cx="38" cy="46" r="3.5" fill="#ffffff" filter="url(#neon-glow-sidebar)" />
+                            <circle cx="54" cy="46" r="3" fill="#22d3ee" filter="url(#neon-glow-sidebar)" />
+                            <circle cx="48" cy="58" r="3" fill="#c084fc" filter="url(#neon-glow-sidebar)" />
+                            <circle cx="58" cy="68" r="3.5" fill="#3b82f6" filter="url(#neon-glow-sidebar)" />
+                        </svg>
+                    </div>
                     <span class="logo-name">RohanGPT</span>
                 </div>
                 <button class="menu-close-btn" onclick="app.toggleSidebar()" aria-label="Close sidebar">✕</button>
@@ -77,7 +102,36 @@
                 <!-- Empty State/Welcome Board (shown when no messages) -->
                 <div class="welcome-container" id="welcome-container">
                     <div class="welcome-header">
-                        <div class="large-grok-logo">𝕏</div>
+                        <div class="large-rohan-logo" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 24px;">
+                            <!-- Falls back dynamically to inline SVG if local logo.png image file is missing -->
+                            <img src="logo.png" class="fallback-logo-img" alt="RohanGPT Logo" onerror="this.style.display='none'" style="max-width: 140px; height: auto; margin-bottom: 12px; filter: drop-shadow(0 0 15px rgba(124, 58, 237, 0.4));">
+                            
+                            <!-- Premium Handcrafted Inline Vector SVG replicating the glowing neon neural-R brain logo -->
+                            <svg class="rohan-glow-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 120px; height: 120px; animation: bounceGlow 4s ease-in-out infinite;">
+                                <defs>
+                                    <linearGradient id="neon-grad-giant" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#ffffff" />
+                                        <stop offset="30%" stop-color="#a78bfa" />
+                                        <stop offset="70%" stop-color="#3b82f6" />
+                                        <stop offset="100%" stop-color="#06b6d4" />
+                                    </linearGradient>
+                                    <filter id="neon-glow-giant" x="-25%" y="-25%" width="150%" height="150%">
+                                        <feGaussianBlur stdDeviation="4.5" result="blur" />
+                                        <feMerge>
+                                            <feMergeNode in="blur" />
+                                            <feMergeNode in="blur" />
+                                            <feMergeNode in="SourceGraphic" />
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+                                <path d="M35,38 C28,38 24,44 26,52 C22,56 22,64 28,68 C34,72 40,70 42,66 C46,70 54,70 58,66 C62,70 70,68 72,62 C74,54 70,48 64,48 C66,42 62,36 54,36 C48,36 44,40 42,44 C38,40 36,38 35,38 Z" stroke="url(#neon-grad-giant)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-giant)" opacity="0.65" />
+                                <path d="M38,68 V46 C38,46 45,40 54,46 C62,50 58,58 48,58 H38 M48,58 L58,68" stroke="url(#neon-grad-giant)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-giant)" />
+                                <circle cx="38" cy="46" r="3" fill="#ffffff" filter="url(#neon-glow-giant)" />
+                                <circle cx="54" cy="46" r="2.5" fill="#22d3ee" filter="url(#neon-glow-giant)" />
+                                <circle cx="48" cy="58" r="2.5" fill="#c084fc" filter="url(#neon-glow-giant)" />
+                                <circle cx="58" cy="68" r="3.5" fill="#3b82f6" filter="url(#neon-glow-giant)" />
+                            </svg>
+                        </div>
                         <h2>What is on your mind?</h2>
                     </div>
 
