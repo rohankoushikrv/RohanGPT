@@ -1,0 +1,24 @@
+{
+  "name": "rohangpt",
+  "version": "1.0.0",
+  "description": "RohanGPT — Modern Conversational Streaming AI Assistant using Google Gemini API",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "start": "python -m http.server 3000",
+    "dev": "python -m http.server 3000",
+    "deploy": "gh-pages -d ."
+  },
+  "devDependencies": {
+    "gh-pages": "^6.1.0"
+  },
+  "keywords": [
+    "RohanGPT",
+    "gemini-streaming",
+    "gemini-api",
+    "copilot-style-ui",
+    "ai-assistant"
+  ],
+  "author": "Rohan Koushik",
+  "license": "MIT"
+}
