@@ -3,39 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RohanGPT — Advanced AI Assistant</title>
+    <title>RohanGPT — Grok UI Edition</title>
     <link rel="stylesheet" href="styles.css">
-    <!-- Google Fonts for premium typography -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- Google Fonts for Grok-like high-end geometric sans serif and mono typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 </head>
-<body class="dark-theme">
+<body class="grok-theme">
     <div class="app-container">
         
-        <!-- Left Navigation Panel (Gemini / Copilot Style) -->
+        <!-- Left Side Collapsible Navigation Panel (Grok Matte Black Style) -->
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-header">
-                <button class="new-chat-btn" onclick="app.createNewChat()" aria-label="Start a new chat thread">
-                    <span class="plus-icon">+</span> New chat
-                </button>
+                <div class="sidebar-logo">
+                    <span class="logo-symbol">𝕏</span>
+                    <span class="logo-name">RohanGPT</span>
+                </div>
                 <button class="menu-close-btn" onclick="app.toggleSidebar()" aria-label="Close sidebar">✕</button>
             </div>
 
+            <button class="new-chat-btn" onclick="app.createNewChat()" aria-label="Start a new chat thread">
+                <span class="plus-icon">+</span> New Chat
+            </button>
+
             <!-- Chat Threads History list -->
             <div class="sidebar-section history-section">
-                <div class="section-title">Recent Chats</div>
+                <div class="section-title">Recent</div>
                 <div class="history-list" id="history-list">
                     <!-- Loaded dynamically from LocalStorage -->
                     <p class="empty-history-text">No recent chats</p>
                 </div>
             </div>
 
-            <!-- Custom Psychology / Personalization Options -->
+            <!-- Sidebar Bottom Controls -->
             <div class="sidebar-footer">
                 <button class="footer-action-btn" onclick="app.openSettingsModal()" aria-label="Configure Assistant Settings">
                     <span class="footer-icon">⚙️</span> Settings
                 </button>
                 <button class="footer-action-btn" onclick="app.clearAllChats()" aria-label="Clear all chat history">
-                    <span class="footer-icon">🗑️</span> Clear all sessions
+                    <span class="footer-icon">🗑️</span> Clear All Chats
                 </button>
             </div>
         </aside>
@@ -50,18 +55,19 @@
             <header class="header">
                 <div class="header-left">
                     <button class="hamburger-menu-btn" onclick="app.toggleSidebar()" aria-label="Toggle Side Menu">☰</button>
-                    <div class="logo-area">
-                        <span class="logo-icon">🚀</span>
-                        <div class="logo-text">
-                            <h1>RohanGPT</h1>
-                            <span class="logo-badge">Pro</span>
-                        </div>
+                    <div class="model-selector-container">
+                        <select id="header-model-select" onchange="app.handleModelChange(this.value)">
+                            <option value="gemini-3.5-flash">RohanGPT (3.5 Flash)</option>
+                            <option value="gemini-3.5-pro">RohanGPT Pro (3.5 Pro)</option>
+                        </select>
                     </div>
                 </div>
+
+                <!-- Grok-style Fun Mode Toggle in the Header -->
                 <div class="header-right">
-                    <div class="model-badge-container">
-                        <span class="model-status-dot"></span>
-                        <span id="active-model-name">Gemini 3.5 Flash</span>
+                    <div class="mode-toggle-pill" id="mode-toggle-pill" onclick="app.toggleFunMode()">
+                        <span class="mode-label active" id="regular-mode-label">Regular</span>
+                        <span class="mode-label" id="fun-mode-label">😜 Fun</span>
                     </div>
                 </div>
             </header>
@@ -71,38 +77,38 @@
                 <!-- Empty State/Welcome Board (shown when no messages) -->
                 <div class="welcome-container" id="welcome-container">
                     <div class="welcome-header">
-                        <h2>Hello, Rohan</h2>
-                        <p class="welcome-sub">How can I help you automate and create today?</p>
+                        <div class="large-grok-logo">𝕏</div>
+                        <h2>What is on your mind?</h2>
                     </div>
 
-                    <!-- Automation Suggestion Cards -->
+                    <!-- Automation Suggestion Cards (Minimalist Rectangles) -->
                     <div class="automation-grid">
                         <div class="automation-card" onclick="app.useAutomation('code_explainer')">
                             <div class="card-icon">💻</div>
                             <div class="card-content">
                                 <h3>Explain Code</h3>
-                                <p>Analyze syntax & algorithms step-by-step</p>
+                                <p>Deconstruct logic and suggest fixes</p>
                             </div>
                         </div>
                         <div class="automation-card" onclick="app.useAutomation('email_drafter')">
                             <div class="card-icon">✉️</div>
                             <div class="card-content">
                                 <h3>Draft Email</h3>
-                                <p>Formulate elegant, professional replies</p>
+                                <p>Formulate professional messages</p>
                             </div>
                         </div>
                         <div class="automation-card" onclick="app.useAutomation('text_summarizer')">
                             <div class="card-icon">📝</div>
                             <div class="card-content">
                                 <h3>Summarize</h3>
-                                <p>Extract key insights and briefs from text</p>
+                                <p>Extract bullet summaries from text</p>
                             </div>
                         </div>
                         <div class="automation-card" onclick="app.useAutomation('brainstormer')">
                             <div class="card-icon">💡</div>
                             <div class="card-content">
-                                <h3>Brainstorm Ideas</h3>
-                                <p>Generate creative solutions & topics</p>
+                                <h3>Brainstorm</h3>
+                                <p>Generate creative concepts & topics</p>
                             </div>
                         </div>
                     </div>
@@ -114,27 +120,37 @@
                 </div>
             </div>
 
-            <!-- Floating Input Pill Area at the bottom center -->
+            <!-- Floating Grok-style Input Area at the bottom center -->
             <footer class="input-bar-container">
-                <div class="input-pill-box">
+                <div class="grok-input-box">
                     <textarea 
                         id="message-input" 
-                        placeholder="Ask RohanGPT anything or trigger an automation..." 
+                        placeholder="Ask anything..." 
                         rows="1" 
                         aria-label="Type your message here to stream RohanGPT responses"
                     ></textarea>
-                    <div class="input-controls">
+                    
+                    <div class="input-controls-row">
                         <div class="left-controls">
-                            <button class="pill-btn" onclick="app.simulateAttachment()" title="Upload File" aria-label="Upload File Attachments">📎</button>
-                            <button class="pill-btn" onclick="app.openSettingsModal()" title="AI Model Options" aria-label="Configure Model parameters">🧠</button>
+                            <button class="control-btn" onclick="app.simulateAttachment()" title="Add file attachment">
+                                📎
+                            </button>
+                            <button class="control-btn" onclick="app.openSettingsModal()" title="Configure Parameters">
+                                ⚙️
+                            </button>
                         </div>
-                        <button id="send-btn" class="send-pill-btn" onclick="app.sendMessage()" aria-label="Send message to RohanGPT">
-                            <span class="send-icon">▲</span>
-                        </button>
+                        
+                        <div class="right-controls">
+                            <!-- Dynamic Live Status Indicator (Regular vs Fun Mode) -->
+                            <span class="grok-status-badge" id="grok-status-badge">Regular Mode</span>
+                            <button id="send-btn" class="send-grok-btn" onclick="app.sendMessage()" aria-label="Send message to RohanGPT">
+                                <span class="send-arrow">→</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
-                <div class="input-help-text">
-                    <small>💡 Tip: Pres Enter to Send, Shift+Enter for new line. RohanGPT can hallucinate; verify critical facts.</small>
+                <div class="grok-footer-disclaimer">
+                    <span>RohanGPT can make mistakes. Verify critical responses.</span>
                 </div>
             </footer>
         </main>
@@ -143,12 +159,12 @@
         <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
             <div class="modal-content">
                 <button class="modal-close-btn" onclick="app.closeSettingsModal()" aria-label="Close Settings Modal">&times;</button>
-                <h2 id="modal-title">⚙️ RohanGPT Configuration</h2>
+                <h2 id="modal-title">⚙️ Configure RohanGPT</h2>
                 
                 <div class="setting-group">
-                    <label for="settings-api-key">Google Generative AI API Key:</label>
-                    <input type="password" id="settings-api-key" placeholder="Enter key starting with AQ..." aria-label="Google API key input">
-                    <small class="settings-help">Key is saved only locally in your browser's LocalStorage.</small>
+                    <label for="settings-api-key">Google Gemini API Key:</label>
+                    <input type="password" id="settings-api-key" placeholder="AQ.Ab8RN6..." aria-label="Google API key input">
+                    <small class="settings-help">Stored locally inside your browser's LocalStorage only.</small>
                 </div>
 
                 <div class="setting-group">
@@ -160,7 +176,7 @@
                 </div>
 
                 <div class="setting-group">
-                    <label for="settings-temperature">Creativity / Temperature:</label>
+                    <label for="settings-temperature">Temperature (Creativity):</label>
                     <div class="range-container">
                         <input type="range" id="settings-temperature" min="0" max="1" step="0.1" value="0.7">
                         <span id="temp-val-display">0.7</span>
@@ -168,11 +184,11 @@
                 </div>
 
                 <div class="setting-group">
-                    <label for="settings-system-instruction">Custom System Instructions:</label>
+                    <label for="settings-system-instruction">Custom System Override:</label>
                     <textarea id="settings-system-instruction" rows="3" placeholder="You are RohanGPT, a helpful and premium AI assistant..."></textarea>
                 </div>
 
-                <button class="save-settings-btn" onclick="app.saveSettings()">Save & Close</button>
+                <button class="save-settings-btn" onclick="app.saveSettings()">Apply Settings</button>
             </div>
         </div>
 

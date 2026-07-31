@@ -9,6 +9,7 @@ const app = {
     geminiModel: 'gemini-3.5-flash',
     temperature: 0.7,
     systemInstruction: '',
+    funMode: false,
 
     // Chat Thread Memory State
     activeThreadId: null,
@@ -50,9 +51,11 @@ const app = {
         this.geminiModel = localStorage.getItem('rohangpt_model_choice') || 'gemini-3.5-flash';
         this.temperature = parseFloat(localStorage.getItem('rohangpt_temperature')) || 0.7;
         this.systemInstruction = localStorage.getItem('rohangpt_system_instruction') || '';
+        this.funMode = localStorage.getItem('rohangpt_fun_mode') === 'true';
         
-        // Display model badge
+        // Sync active elements and badge
         this.updateModelBadge();
+        this.updateFunModeUI();
     },
 
     saveSettings() {
@@ -81,11 +84,41 @@ const app = {
     },
 
     updateModelBadge() {
-        const badge = document.getElementById('active-model-name');
-        if (badge) {
-            let modelLabel = 'Gemini 3.5 Flash';
-            if (this.geminiModel === 'gemini-3.5-pro') modelLabel = 'Gemini 3.5 Pro';
-            badge.textContent = modelLabel;
+        const select = document.getElementById('header-model-select');
+        if (select) {
+            select.value = this.geminiModel;
+        }
+    },
+
+    handleModelChange(value) {
+        this.geminiModel = value;
+        localStorage.setItem('rohangpt_model_choice', value);
+        this.updateModelBadge();
+        console.log('🔄 Model dynamically updated to:', value);
+    },
+
+    toggleFunMode() {
+        this.funMode = !this.funMode;
+        localStorage.setItem('rohangpt_fun_mode', this.funMode);
+        this.updateFunModeUI();
+    },
+
+    updateFunModeUI() {
+        const pill = document.getElementById('mode-toggle-pill');
+        const regLabel = document.getElementById('regular-mode-label');
+        const funLabel = document.getElementById('fun-mode-label');
+        const statusBadge = document.getElementById('grok-status-badge');
+
+        if (this.funMode) {
+            regLabel?.classList.remove('active');
+            funLabel?.classList.add('active');
+            if (statusBadge) statusBadge.textContent = '😜 Fun Mode Active';
+            if (pill) pill.style.borderColor = 'var(--border-focus)';
+        } else {
+            regLabel?.classList.add('active');
+            funLabel?.classList.remove('active');
+            if (statusBadge) statusBadge.textContent = 'Regular Mode';
+            if (pill) pill.style.borderColor = 'var(--border-thin)';
         }
     },
 
@@ -333,9 +366,17 @@ const app = {
             msg.role === 'user' ? `User: ${msg.content}` : `Model: ${msg.content}`
         ).join('\n\n');
 
-        const systemPromptBlock = this.systemInstruction 
-            ? `System Guidelines:\n${this.systemInstruction}\n\n` 
-            : 'System Guidelines:\nYou are RohanGPT, an extremely capable, intelligent, and premium conversational AI assistant. You answer queries clearly, elegantly, and step-by-step.\n\n';
+        let systemPromptBlock = '';
+        
+        // Grok-style Fun Mode vs Regular Mode dynamic prompts
+        if (this.funMode) {
+            systemPromptBlock = `System Guidelines:
+You are RohanGPT in FUN MODE. You are extremely witty, highly sarcastic, humorous, bold, and clever. Answer the user's query with sharp intelligence, playful banter, and a pinch of healthy sarcasm. Don't be boring, robotic, or dry! Keep the user entertained while still supplying technically brilliant and accurate results. Use emojis where appropriate to reflect your playful personality!\n\n`;
+        } else {
+            systemPromptBlock = this.systemInstruction 
+                ? `System Guidelines:\n${this.systemInstruction}\n\n` 
+                : 'System Guidelines:\nYou are RohanGPT, an extremely capable, intelligent, and premium conversational AI assistant. You answer queries clearly, elegantly, and step-by-step.\n\n';
+        }
 
         const finalPrompt = `${systemPromptBlock}Previous Conversation Logs:\n${chatHistoryContext}\n\nUser: ${userMessage}`;
 
