@@ -291,7 +291,7 @@ const app = {
         const input = document.getElementById('message-input');
         const message = input.value.trim();
 
-        if (!message) return;
+        if (!message && !this.attachedFile) return;
 
         // Verify API Key existence
         if (!this.googleApiKey) {
@@ -311,16 +311,35 @@ const app = {
         input.disabled = true;
         document.getElementById('send-btn').disabled = true;
 
-        // Stage user message to chat UI & memory state
-        this.addMessageToChat(message, 'user');
+        // Determine prompt text representation to show the user (just show their prompt + file tag, not raw giant content!)
+        let displayMessage = message;
+        if (this.attachedFile) {
+            displayMessage = `📄 [Attached: ${this.attachedFile.name}]\n\n${message}`;
+        }
+
+        // Stage user message to chat UI
+        this.addMessageToChat(displayMessage, 'user');
         
         const activeThread = this.savedThreads[this.activeThreadId];
-        activeThread.messages.push({ role: 'user', content: message });
+        activeThread.messages.push({ role: 'user', content: displayMessage });
 
         // Update thread title if it was the first message
         if (activeThread.messages.length === 1) {
-            activeThread.title = message.substring(0, 30) + (message.length > 30 ? '...' : '');
+            const tempTitle = message ? message : `File: ${this.attachedFile.name}`;
+            activeThread.title = tempTitle.substring(0, 30) + (tempTitle.length > 30 ? '...' : '');
             this.renderHistoryList();
+        }
+
+        // Formulate final message payload with file text context injected!
+        let messageToSend = message;
+        if (this.attachedFile) {
+            if (this.attachedFile.isText) {
+                messageToSend = `[Attached Text/Code File Content from: ${this.attachedFile.name}]\n\`\`\`\n${this.attachedFile.content}\n\`\`\`\n\nUser Query: ${message}`;
+            } else {
+                messageToSend = `[Attached Binary/Media File from: ${this.attachedFile.name}]\n\nUser Query: ${message}`;
+            }
+            // Clear attachment previews
+            this.removeAttachedFile();
         }
 
         // Create empty bot container bubble for live streaming
@@ -331,7 +350,7 @@ const app = {
         let fullText = '';
 
         try {
-            await this.streamAIResponse(message, (chunkText) => {
+            await this.streamAIResponse(messageToSend, (chunkText) => {
                 this.showLoading(false); // Hide spinner on first packet
                 fullText += chunkText;
 
@@ -469,8 +488,69 @@ You are RohanGPT in FUN MODE. You are extremely witty, highly sarcastic, humorou
         input.style.height = Math.min(input.scrollHeight, 120) + 'px';
     },
 
-    simulateAttachment() {
-        alert('📎 File attachment simulation triggered!\n\nRohanGPT will integrate localized PDF/TXT OCR processing in our next feature roadmap!');
+    triggerFileAttach() {
+        const fileInput = document.getElementById('file-attachment-input');
+        if (fileInput) fileInput.click();
+    },
+
+    handleFileAttach(inputElement) {
+        const file = inputElement.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        
+        // We read textual / code files as text, and others as Base64/data URLs
+        const isText = file.type.startsWith('text/') || 
+                       file.name.endsWith('.js') || 
+                       file.name.endsWith('.ts') || 
+                       file.name.endsWith('.py') || 
+                       file.name.endsWith('.html') || 
+                       file.name.endsWith('.css') || 
+                       file.name.endsWith('.json') || 
+                       file.name.endsWith('.md') ||
+                       file.name.endsWith('.txt');
+
+        reader.onload = (e) => {
+            this.attachedFile = {
+                name: file.name,
+                size: file.size,
+                type: file.type,
+                content: e.target.result,
+                isText: isText
+            };
+
+            // Display file preview card
+            const container = document.getElementById('attachment-preview-container');
+            const nameSpan = document.getElementById('attached-file-name');
+            const sizeSpan = document.getElementById('attached-file-size');
+
+            if (container && nameSpan && sizeSpan) {
+                nameSpan.textContent = file.name;
+                
+                // Format file size nicely
+                const kb = (file.size / 1024).toFixed(1);
+                sizeSpan.textContent = kb + ' KB';
+                
+                container.style.display = 'flex';
+            }
+        };
+
+        if (isText) {
+            reader.readAsText(file);
+        } else {
+            // Fallback: read image/binary files as data URL
+            reader.readAsDataURL(file);
+        }
+    },
+
+    removeAttachedFile() {
+        this.attachedFile = null;
+        
+        const fileInput = document.getElementById('file-attachment-input');
+        if (fileInput) fileInput.value = ''; // Reset input
+
+        const container = document.getElementById('attachment-preview-container');
+        if (container) container.style.display = 'none';
     },
 
     /* ========== UI CONTROLLER HELPER FUNCTIONS ========== */
@@ -554,11 +634,22 @@ You are RohanGPT in FUN MODE. You are extremely witty, highly sarcastic, humorou
     /* ========== RESPONSIVE DRAWER & MODALS ========== */
 
     toggleSidebar() {
+        const container = document.querySelector('.app-container');
         const sidebar = document.getElementById('sidebar');
         const overlay = document.getElementById('sidebar-overlay');
-        if (sidebar && overlay) {
-            sidebar.classList.toggle('active');
-            overlay.classList.toggle('active');
+        
+        if (container && sidebar) {
+            // Check screen size to toggle correct behaviour
+            if (window.innerWidth > 900) {
+                // Desktop toggle: hide sidebar completely
+                container.classList.toggle('sidebar-hidden');
+            } else {
+                // Mobile toggle: slide drawer off-canvas
+                sidebar.classList.toggle('active');
+                if (overlay) overlay.classList.toggle('active');
+            }
+        }
+    },
         }
     },
 
