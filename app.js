@@ -6,7 +6,7 @@
 const app = {
     // Generative AI Configuration
     googleApiKey: null,
-    geminiModel: 'gemini-1.5-flash',
+    geminiModel: 'gemini-3.5-flash',
     temperature: 0.7,
     systemInstruction: '',
 
@@ -47,7 +47,7 @@ const app = {
         this.googleApiKey = localStorage.getItem('rohangpt_google_api_key') || '';
         
         // Load settings panel configurations
-        this.geminiModel = localStorage.getItem('rohangpt_model_choice') || 'gemini-1.5-flash';
+        this.geminiModel = localStorage.getItem('rohangpt_model_choice') || 'gemini-3.5-flash';
         this.temperature = parseFloat(localStorage.getItem('rohangpt_temperature')) || 0.7;
         this.systemInstruction = localStorage.getItem('rohangpt_system_instruction') || '';
         
@@ -83,8 +83,8 @@ const app = {
     updateModelBadge() {
         const badge = document.getElementById('active-model-name');
         if (badge) {
-            let modelLabel = 'Gemini 1.5 Flash';
-            if (this.geminiModel === 'gemini-1.5-pro') modelLabel = 'Gemini 1.5 Pro';
+            let modelLabel = 'Gemini 3.5 Flash';
+            if (this.geminiModel === 'gemini-3.5-pro') modelLabel = 'Gemini 3.5 Pro';
             badge.textContent = modelLabel;
         }
     },
