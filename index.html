@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="RohanGPT is a modern AI assistant with a Grok-style high-contrast interface, powered by Groq OpenAI-compatible responses.">
+    <title>RohanGPT — Grok UI Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="stylesheet" href="styles.css">
+    <!-- Google Fonts for Grok-like high-end geometric sans serif and mono typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body class="grok-theme">
+    <div class="app-container">
+        
+        <!-- Left Side Collapsible Navigation Panel (Grok Matte Black Style) -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-logo">
+                    <div class="logo-symbol-container" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center;">
+                        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 100%; height: 100%;">
+                            <defs>
+                                <linearGradient id="neon-grad-sidebar" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" stop-color="#ffffff" />
+                                    <stop offset="30%" stop-color="#a78bfa" />
+                                    <stop offset="70%" stop-color="#3b82f6" />
+                                    <stop offset="100%" stop-color="#06b6d4" />
+                                </linearGradient>
+                                <filter id="neon-glow-sidebar" x="-20%" y="-20%" width="140%" height="140%">
+                                    <feGaussianBlur stdDeviation="3.5" result="blur" />
+                                    <feMerge>
+                                        <feMergeNode in="blur" />
+                                        <feMergeNode in="blur" />
+                                        <feMergeNode in="SourceGraphic" />
+                                    </feMerge>
+                                </filter>
+                            </defs>
+                            <path d="M35,38 C28,38 24,44 26,52 C22,56 22,64 28,68 C34,72 40,70 42,66 C46,70 54,70 58,66 C62,70 70,68 72,62 C74,54 70,48 64,48 C66,42 62,36 54,36 C48,36 44,40 42,44 C38,40 36,38 35,38 Z" stroke="url(#neon-grad-sidebar)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-sidebar)" opacity="0.65" />
+                            <path d="M38,68 V46 C38,46 45,40 54,46 C62,50 58,58 48,58 H38 M48,58 L58,68" stroke="url(#neon-grad-sidebar)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-sidebar)" />
+                            <circle cx="38" cy="46" r="3.5" fill="#ffffff" filter="url(#neon-glow-sidebar)" />
+                            <circle cx="54" cy="46" r="3" fill="#22d3ee" filter="url(#neon-glow-sidebar)" />
+                            <circle cx="48" cy="58" r="3" fill="#c084fc" filter="url(#neon-glow-sidebar)" />
+                            <circle cx="58" cy="68" r="3.5" fill="#3b82f6" filter="url(#neon-glow-sidebar)" />
+                        </svg>
+                    </div>
+                    <span class="logo-name">RohanGPT</span>
+                </div>
+                <button class="menu-close-btn" onclick="app.toggleSidebar()" aria-label="Close sidebar">✕</button>
+            </div>
+
+            <button class="new-chat-btn" onclick="app.createNewChat()" aria-label="Start a new chat thread">
+                <span class="plus-icon">+</span> New Chat
+            </button>
+
+            <div class="sidebar-search">
+                <div class="search-icon">🔎</div>
+                <input id="chat-search-input" type="search" placeholder="Search chats" aria-label="Search recent chat threads">
+            </div>
+
+            <!-- Chat Threads History list -->
+            <div class="sidebar-section history-section">
+                <div class="section-title">Recent</div>
+                <div class="history-list" id="history-list">
+                    <!-- Loaded dynamically from LocalStorage -->
+                    <p class="empty-history-text">No recent chats</p>
+                </div>
+            </div>
+
+            <!-- Sidebar Bottom Controls -->
+            <div class="sidebar-footer">
+                <button class="footer-action-btn" onclick="app.openSettingsModal()" aria-label="Configure Assistant Settings">
+                    <span class="footer-icon">⚙️</span> Settings
+                </button>
+                <button class="footer-action-btn" onclick="app.clearAllChats()" aria-label="Clear all chat history">
+                    <span class="footer-icon">🗑️</span> Clear All Chats
+                </button>
+            </div>
+        </aside>
+
+        <!-- Sidebar Overlay Backdrop for Mobile menu -->
+        <div class="sidebar-overlay" id="sidebar-overlay" onclick="app.toggleSidebar()" aria-hidden="true"></div>
+
+        <!-- Main Chat Canvas -->
+        <main class="main-canvas">
+            
+            <!-- Header Row -->
+            <header class="header">
+                <div class="header-left">
+                    <button class="hamburger-menu-btn" onclick="app.toggleSidebar()" aria-label="Toggle Side Menu">☰</button>
+                    <div class="main-header-logo" style="display: flex; align-items: center; gap: 8px; margin-left: 8px;">
+                        <span style="font-family: 'Space Grotesk', sans-serif; font-size: 22px; font-weight: 800; background: linear-gradient(135deg, #ffffff 30%, #c084fc 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; filter: drop-shadow(0 0 10px rgba(124, 58, 237, 0.25)); font-weight: 800; letter-spacing: -0.5px;">RohanGPT</span>
+                    </div>
+                </div>
+
+                <div class="header-right">
+                </div>
+            </header>
+
+            <!-- Chat Content Workspace -->
+            <div class="chat-workspace">
+                <!-- Empty State/Welcome Board (shown when no messages) -->
+                <div class="welcome-container" id="welcome-container">
+                    <div class="welcome-header">
+                        <div class="large-rohan-logo" style="display: flex; flex-direction: column; align-items: center; justify-content: center; margin-bottom: 24px;">
+                            <!-- Falls back dynamically to inline SVG if local logo.png image file is missing -->
+                            <img src="logo.png" class="fallback-logo-img" alt="RohanGPT Logo" width="140" height="140" onerror="this.style.display='none'" style="max-width: 140px; height: auto; margin-bottom: 12px; filter: drop-shadow(0 0 15px rgba(124, 58, 237, 0.4));">
+                            
+                            <!-- Premium Handcrafted Inline Vector SVG replicating the glowing neon neural-R brain logo -->
+                            <svg class="rohan-glow-svg" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width: 120px; height: 120px; animation: bounceGlow 4s ease-in-out infinite;">
+                                <defs>
+                                    <linearGradient id="neon-grad-giant" x1="0%" y1="0%" x2="100%" y2="100%">
+                                        <stop offset="0%" stop-color="#ffffff" />
+                                        <stop offset="30%" stop-color="#a78bfa" />
+                                        <stop offset="70%" stop-color="#3b82f6" />
+                                        <stop offset="100%" stop-color="#06b6d4" />
+                                    </linearGradient>
+                                    <filter id="neon-glow-giant" x="-25%" y="-25%" width="150%" height="150%">
+                                        <feGaussianBlur stdDeviation="4.5" result="blur" />
+                                        <feMerge>
+                                            <feMergeNode in="blur" />
+                                            <feMergeNode in="blur" />
+                                            <feMergeNode in="SourceGraphic" />
+                                        </feMerge>
+                                    </filter>
+                                </defs>
+                                <path d="M35,38 C28,38 24,44 26,52 C22,56 22,64 28,68 C34,72 40,70 42,66 C46,70 54,70 58,66 C62,70 70,68 72,62 C74,54 70,48 64,48 C66,42 62,36 54,36 C48,36 44,40 42,44 C38,40 36,38 35,38 Z" stroke="url(#neon-grad-giant)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-giant)" opacity="0.65" />
+                                <path d="M38,68 V46 C38,46 45,40 54,46 C62,50 58,58 48,58 H38 M48,58 L58,68" stroke="url(#neon-grad-giant)" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" filter="url(#neon-glow-giant)" />
+                                <circle cx="38" cy="46" r="3" fill="#ffffff" filter="url(#neon-glow-giant)" />
+                                <circle cx="54" cy="46" r="2.5" fill="#22d3ee" filter="url(#neon-glow-giant)" />
+                                <circle cx="48" cy="58" r="2.5" fill="#c084fc" filter="url(#neon-glow-giant)" />
+                                <circle cx="58" cy="68" r="3.5" fill="#3b82f6" filter="url(#neon-glow-giant)" />
+                            </svg>
+                        </div>
+                        <h2>What is on your mind?</h2>
+                    </div>
+
+                    <!-- Automation Suggestion Cards (Minimalist Rectangles) -->
+                    <div class="automation-grid">
+                        <div class="automation-card" onclick="app.useAutomation('code_explainer')">
+                            <div class="card-icon">💻</div>
+                            <div class="card-content">
+                                <h3>Explain Code</h3>
+                                <p>Deconstruct logic and suggest fixes</p>
+                            </div>
+                        </div>
+                        <div class="automation-card" onclick="app.useAutomation('email_drafter')">
+                            <div class="card-icon">✉️</div>
+                            <div class="card-content">
+                                <h3>Draft Email</h3>
+                                <p>Formulate professional messages</p>
+                            </div>
+                        </div>
+                        <div class="automation-card" onclick="app.useAutomation('text_summarizer')">
+                            <div class="card-icon">📝</div>
+                            <div class="card-content">
+                                <h3>Summarize</h3>
+                                <p>Extract bullet summaries from text</p>
+                            </div>
+                        </div>
+                        <div class="automation-card" onclick="app.useAutomation('brainstormer')">
+                            <div class="card-icon">💡</div>
+                            <div class="card-content">
+                                <h3>Brainstorm</h3>
+                                <p>Generate creative concepts & topics</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Active Chat Log -->
+                <div class="chat-history-container" id="chat-history">
+                    <!-- Injected dynamically via JS -->
+                </div>
+            </div>
+
+            <!-- Floating Grok-style Input Area at the bottom center -->
+            <footer class="input-bar-container">
+                <div class="grok-input-box">
+                    <textarea 
+                        id="message-input" 
+                        placeholder="Ask anything..." 
+                        rows="1" 
+                        aria-label="Type your message here to stream RohanGPT responses"
+                    ></textarea>
+                    <button id="send-btn" class="send-grok-btn" onclick="app.sendMessage()" aria-label="Send message to RohanGPT">
+                        <span class="send-arrow">→</span>
+                    </button>
+                </div>
+                
+                <div class="grok-footer-disclaimer">
+                    <span>RohanGPT can make mistakes. Verify critical responses.</span>
+                </div>
+            </footer>
+        </main>
+
+        <!-- Settings Modal Drawer -->
+        <div id="settings-modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+            <div class="modal-content">
+                <button class="modal-close-btn" onclick="app.closeSettingsModal()" aria-label="Close Settings Modal">&times;</button>
+                <h2 id="modal-title">⚙️ Configure RohanGPT</h2>
+                
+                <div class="setting-group">
+                    <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px;">
+                        RohanGPT sends requests directly to the Groq OpenAI-compatible Responses API. Set your API key in `index.html` before using the app.
+                    </p>
+                    <label for="settings-model-choice">Generative Model Choice:</label>
+                    <select id="settings-model-choice">
+                        <option value="openai/gpt-oss-20b">openai/gpt-oss-20b (Groq)</option>
+                        <option value="openai/gpt-oss-8b">openai/gpt-oss-8b (Groq)</option>
+                    </select>
+                </div>
+
+                <div class="setting-group">
+                    <label for="settings-temperature">Temperature (Creativity):</label>
+                    <div class="range-container">
+                        <input type="range" id="settings-temperature" min="0" max="1" step="0.1" value="0.7">
+                        <span id="temp-val-display">0.7</span>
+                    </div>
+                </div>
+
+                <div class="setting-group">
+                    <label for="settings-system-instruction">Custom System Override:</label>
+                    <textarea id="settings-system-instruction" rows="3" placeholder="You are RohanGPT, a helpful and premium AI assistant..."></textarea>
+                </div>
+
+                <button class="save-settings-btn" onclick="app.saveSettings()">Apply Settings</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Application Controller -->
+    <script src="app.js" defer></script>
+</body>
+</html>
