@@ -306,10 +306,10 @@ const app = {
 
         if (!message) return;
 
-        if (!this.apiKey || this.apiKey === 'YOUR_GROQ_API_KEY') {
+        /*if (!this.apiKey || this.apiKey === 'YOUR_GROQ_API_KEY') {
             alert('🔧 Please configure your Groq API key in app.js before sending a message.');
             return;
-        }
+        }*/
 
         // Collapse welcome state
         document.getElementById('welcome-container').style.display = 'none';
