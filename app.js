@@ -5,8 +5,8 @@
 
 const app = {
     // Generative AI Configuration
-    googleApiKey: null,
-    geminiModel: 'openai/gpt-oss-20b',
+    apiProxyUrl: window.ROHAN_GPT_API_PROXY || 'https://YOUR_WORKER_SUBDOMAIN.workers.dev',
+    geminiModel: 'gemini-3.5-flash',
     temperature: 0.7,
     systemInstruction: '',
     funMode: false,
@@ -45,11 +45,8 @@ const app = {
     },
 
     loadSettings() {
-        // Load API Key
-        this.googleApiKey = localStorage.getItem('rohangpt_google_api_key') || '';
-        
         // Load settings panel configurations
-        this.geminiModel = localStorage.getItem('rohangpt_model_choice') || 'openai/gpt-oss-20b';
+        this.geminiModel = localStorage.getItem('rohangpt_model_choice') || 'gemini-3.5-flash';
         this.temperature = parseFloat(localStorage.getItem('rohangpt_temperature')) || 0.7;
         this.systemInstruction = localStorage.getItem('rohangpt_system_instruction') || '';
         this.funMode = localStorage.getItem('rohangpt_fun_mode') === 'true';
@@ -60,19 +57,16 @@ const app = {
     },
 
     saveSettings() {
-        const keyInput = document.getElementById('settings-api-key').value.trim();
         const modelSelect = document.getElementById('settings-model-choice').value;
         const tempVal = document.getElementById('settings-temperature').value;
         const systemText = document.getElementById('settings-system-instruction').value.trim();
 
-        // 1. Save values to LocalStorage
-        localStorage.setItem('rohangpt_google_api_key', keyInput);
+        // Save values to LocalStorage
         localStorage.setItem('rohangpt_model_choice', modelSelect);
         localStorage.setItem('rohangpt_temperature', tempVal);
         localStorage.setItem('rohangpt_system_instruction', systemText);
 
-        // 2. Update memory state
-        this.googleApiKey = keyInput;
+        // Update memory state
         this.geminiModel = modelSelect;
         this.temperature = parseFloat(tempVal) || 0.7;
         this.systemInstruction = systemText;
@@ -311,10 +305,8 @@ const app = {
 
         if (!message) return;
 
-        // Verify API Key existence
-        if (!this.googleApiKey) {
-            alert('🔑 REQUIRED: Please set your Groq API key in Settings first!');
-            this.openSettingsModal();
+        if (!this.apiProxyUrl || this.apiProxyUrl.includes('YOUR_WORKER_SUBDOMAIN')) {
+            alert('🔧 Please configure your Cloudflare Worker proxy URL in index.html before sending a message.');
             return;
         }
 
@@ -329,23 +321,19 @@ const app = {
         input.disabled = true;
         document.getElementById('send-btn').disabled = true;
 
-        // Determine prompt text representation to show the user (just show their prompt + file tag, not raw giant content!)
-        const displayMessage = message;
-
-        // Stage user message to chat UI
-        this.addMessageToChat(displayMessage, 'user');
+        // Show user message in chat UI
+        this.addMessageToChat(message, 'user');
         
         const activeThread = this.savedThreads[this.activeThreadId];
-        activeThread.messages.push({ role: 'user', content: displayMessage });
+        activeThread.messages.push({ role: 'user', content: message });
 
         // Update thread title if it was the first message
         if (activeThread.messages.length === 1) {
-            const tempTitle = message;
-            activeThread.title = tempTitle.substring(0, 30) + (tempTitle.length > 30 ? '...' : '');
+            activeThread.title = message.substring(0, 30) + (message.length > 30 ? '...' : '');
             this.renderHistoryList();
         }
 
-        const messageToSend = this.normalizeUserMessage(message);
+        const messageToSend = message;
 
         // Create empty bot container bubble for live streaming
         const chatHistory = document.getElementById('chat-history');
@@ -450,20 +438,16 @@ You are RohanGPT in FUN MODE. You are extremely witty, highly sarcastic, humorou
 
         const finalPrompt = this.buildPrompt(userMessage, chatHistoryContext, systemPromptBlock);
 
-        const modelName = this.geminiModel || 'openai/gpt-oss-20b';
-        const apiKey = this.googleApiKey || localStorage.getItem('rohangpt_google_api_key') || '';
-
-        const response = await fetch('https://api.groq.com/openai/v1/responses', {
+        const response = await fetch(`${this.apiProxyUrl}/stream`, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                model: modelName,
-                input: finalPrompt,
-                temperature: Math.min(Math.max(this.temperature, 0.0), 1.0),
-                max_output_tokens: 2048
+                model: this.geminiModel,
+                prompt: finalPrompt,
+                temperature: this.temperature,
+                maxOutputTokens: 2048
             })
         });
 
@@ -621,12 +605,9 @@ You are RohanGPT in FUN MODE. You are extremely witty, highly sarcastic, humorou
         const overlay = document.getElementById('sidebar-overlay');
         
         if (container && sidebar) {
-            // Check screen size to toggle correct behaviour
             if (window.innerWidth > 900) {
-                // Desktop toggle: hide sidebar completely
                 container.classList.toggle('sidebar-hidden');
             } else {
-                // Mobile toggle: slide drawer off-canvas
                 sidebar.classList.toggle('active');
                 if (overlay) overlay.classList.toggle('active');
             }
@@ -636,8 +617,6 @@ You are RohanGPT in FUN MODE. You are extremely witty, highly sarcastic, humorou
     openSettingsModal() {
         const modal = document.getElementById('settings-modal');
         if (modal) {
-            // Restore form values
-            document.getElementById('settings-api-key').value = this.googleApiKey;
             document.getElementById('settings-model-choice').value = this.geminiModel;
             document.getElementById('settings-temperature').value = this.temperature;
             document.getElementById('temp-val-display').textContent = this.temperature;

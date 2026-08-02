@@ -33,7 +33,7 @@ Pre-configured, high-efficiency task panels to immediately start complex work:
 - Fully collapsible left-drawer and backdrop overlays for fluid responsive mobile layouts.
 - Centered, roomy chat log with custom user (`🧑`) and assistant (`🚀`) premium avatars.
 - Floating, pill-shaped input area with vertical auto-resizing text fields.
-- ⚙️ **Config Drawer**: Instant access to configure Google API keys, toggle between Gemini models (Flash and Pro), dial in Temperature creativity parameters, and override custom System Instructions dynamically!
+- ⚙️ **Config Drawer**: Instant access to choose Gemini model variants, adjust temperature, and override custom system prompts dynamically.
 
 ---
 
@@ -55,9 +55,31 @@ Open **`http://localhost:3000`** in your browser to start streaming!
 
 ---
 
+## ☁️ Cloudflare Worker Proxy (Secure API Key)
+To protect your Google API key while hosting on GitHub Pages, run a Cloudflare Worker that stores the key securely in an environment variable and proxies browser requests.
+
+### Worker setup
+1. Install Cloudflare Wrangler if needed: `npm install -g wrangler`
+2. Create a new Worker in your Cloudflare account.
+3. Save `worker.js` from this repository into the worker project.
+4. Configure a Worker secret named `GOOGLE_API_KEY`:
+   ```bash
+   wrangler secret put GOOGLE_API_KEY
+   ```
+5. Deploy the worker.
+6. Set `window.ROHAN_GPT_API_PROXY` in `RohanGPT/index.html` to your worker URL.
+
+### Why use this proxy?
+- The API key stays inside Cloudflare Worker environment variables.
+- Browser code only sees the proxy endpoint, not the raw secret.
+- GitHub Pages can host the static UI safely.
+
+---
+
 ## 🔒 **Privacy & Data Security**
-- **100% Client-Side**: RohanGPT connects directly to Google Generative AI servers. Your prompts never route through intermediary backend databases.
-- **LocalStorage Protection**: Your custom system prompts, keys, and chat logs are stored strictly inside your own browser.
+- **Secure Proxy**: Your API key stays in Cloudflare, not in frontend storage.
+- **Client Requests Only**: The browser sends prompts to the proxy endpoint; the worker forwards them to Google Generative AI.
+- **LocalStorage Protection**: Your chat history, model selection, temperature, and prompt overrides remain stored only in your browser.
 
 ---
 
