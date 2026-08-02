@@ -443,7 +443,7 @@ You are RohanGPT in FUN MODE. You are extremely witty, highly sarcastic, humorou
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.apiKey}`
+                'Authorization': `Bearer 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`
             },
             body: JSON.stringify({
                 model: this.geminiModel,
