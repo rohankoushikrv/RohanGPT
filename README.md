@@ -1,6 +1,6 @@
 # 🚀 RohanGPT — Advanced Conversational Streaming AI Assistant
 
-A state-of-the-art, 100% serverless client-side AI conversational assistant powered by Google Generative AI (Gemini) API. **RohanGPT** features a high-end, responsive, Copilot/Gemini-style dark interface with smooth animations, custom configuration drawers, and advanced pre-configured prompt automations.
+A state-of-the-art, 100% serverless client-side AI conversational assistant powered by Groq's OpenAI-compatible responses API. **RohanGPT** features a high-end, responsive, Copilot-style dark interface with smooth animations, custom configuration drawers, and advanced pre-configured prompt automations.
 
 ---
 
@@ -12,8 +12,8 @@ A state-of-the-art, 100% serverless client-side AI conversational assistant powe
 
 ## ✨ **Key Features**
 
-### 1. ⚡ **True Real-Time Streaming (SSE)**
-Switches from legacy polling or awaiting full payloads to the live Server-Sent Events (SSE) **`streamGenerateContent`** endpoint. Combined with browser-level stream readers (`response.body.getReader()`), responses are output chunk-by-chunk in real-time with **zero perceived thinking latency**.
+### 1. ⚡ **Groq OpenAI-Compatible Responses API**
+Uses Groq's OpenAI-compatible `/responses` endpoint with `openai/gpt-oss-20b` for fast, low-latency assistant responses.
 
 ### 2. 📁 **Multi-Session Chat History**
 Fully loaded chat thread lifecycle management:
