@@ -598,11 +598,11 @@ body {
     backdrop-filter: blur(28px);
     border: 1px solid rgba(164, 202, 254, 0.22);
     border-radius: 46px;
-    padding: 16px 16px 14px;
+    padding: 12px 14px;
     display: grid;
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr auto;
+    align-items: center;
     gap: 12px;
-    align-items: stretch;
     box-shadow: 0 24px 50px rgba(59, 130, 246, 0.12);
     pointer-events: all;
 }
@@ -612,7 +612,7 @@ body {
 }
 
 .grok-input-box textarea {
-    width: 100%;
+    flex: 1;
     min-height: 54px;
     max-height: 140px;
     background: rgba(255, 255, 255, 0.05);
@@ -626,6 +626,7 @@ body {
     line-height: 1.75;
     resize: none;
     padding: 12px 14px;
+    width: auto;
 }
 
 .grok-input-box textarea::placeholder {
@@ -646,25 +647,6 @@ body {
 
 .input-controls-row {
     display: none;
-}
-
-.left-controls {
-    display: none;
-}
-
-.control-btn {
-    width: 44px;
-    height: 44px;
-    border-radius: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: rgba(255, 255, 255, 0.06);
-    color: var(--text-primary);
-    font-size: 16px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
 }
 
 .control-btn:hover {
@@ -917,16 +899,30 @@ body {
 
     .grok-input-box {
         padding: 14px;
-        grid-template-columns: 1fr;
+        grid-template-columns: 1fr auto;
         gap: 12px;
         width: calc(100vw - 16px);
         max-width: 100%;
+        align-items: center;
     }
 
     .grok-input-box textarea {
-        min-height: 48px;
+        width: 100%;
+        min-height: 54px;
         font-size: 15px;
         line-height: 1.7;
+    }
+
+    .chat-history-container {
+        padding-bottom: 220px;
+    }
+
+    .chat-workspace {
+        padding: 24px 16px;
+    }
+
+    .header {
+        padding: 0 16px;
     }
 
     .input-controls-row {

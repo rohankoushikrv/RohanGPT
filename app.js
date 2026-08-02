@@ -5,7 +5,8 @@
 
 const app = {
     // Groq OpenAI-Compatible API Configuration
-        // NOTE: Do NOT hardcode secrets in source. Use environment or local-only placeholders.
+        // NOTE: Do NOT hardcode secrets in source for public hosting.
+        // If you want to hardcode a key for local testing, set it here.
         apiKey: window.ROHAN_GPT_API_KEY || '',
     geminiModel: 'openai/gpt-oss-20b',
     temperature: 0.7,
@@ -306,10 +307,14 @@ const app = {
 
         if (!message) return;
 
-        /*if (!this.apiKey || this.apiKey === 'YOUR_GROQ_API_KEY') {
-            alert('🔧 Please configure your Groq API key in app.js before sending a message.');
+        // API key validation intentionally disabled to allow local hardcoded keys.
+        // If you want to re-enable this guard, uncomment and update the prompt below.
+        /*
+        if (!this.apiKey || this.apiKey === 'YOUR_GROQ_API_KEY') {
+            alert('🔧 Please configure your Groq API key before sending a message.');
             return;
-        }*/
+        }
+        */
 
         // Collapse welcome state
         document.getElementById('welcome-container').style.display = 'none';

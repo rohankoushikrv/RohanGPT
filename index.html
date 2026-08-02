@@ -183,21 +183,9 @@
                         rows="1" 
                         aria-label="Type your message here to stream RohanGPT responses"
                     ></textarea>
-                    
-                    <div class="input-controls-row">
-                        <div class="left-controls">
-                            <button class="control-btn" onclick="app.openSettingsModal()" title="Configure Parameters">
-                                ⚙️
-                            </button>
-                        </div>
-                        
-                        <div class="right-controls">
-                            <span class="grok-status-badge" id="grok-status-badge">Regular Mode</span>
-                            <button id="send-btn" class="send-grok-btn" onclick="app.sendMessage()" aria-label="Send message to RohanGPT">
-                                <span class="send-arrow">→</span>
-                            </button>
-                        </div>
-                    </div>
+                    <button id="send-btn" class="send-grok-btn" onclick="app.sendMessage()" aria-label="Send message to RohanGPT">
+                        <span class="send-arrow">→</span>
+                    </button>
                 </div>
                 
                 <div class="grok-footer-disclaimer">
@@ -242,12 +230,6 @@
 
     </div>
 
-    <!-- Direct Groq API key for browser requests -->
-    <script>
-        // Set this to your Groq API key for direct browser requests.
-        // WARNING: exposing the key in static frontend code is insecure for public hosting.
-        window.ROHAN_GPT_API_KEY = 'YOUR_GROQ_API_KEY';
-    </script>
     <!-- Application Controller -->
     <script src="app.js" defer></script>
 </body>
