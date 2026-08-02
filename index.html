@@ -214,12 +214,12 @@
                 
                 <div class="setting-group">
                     <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.6; margin-bottom: 12px;">
-                        RohanGPT sends requests through your Cloudflare Worker proxy. Keep your API key secure by storing it in the worker environment, not in browser storage.
+                        RohanGPT sends requests directly to the Groq OpenAI-compatible Responses API. Set your API key in `index.html` before using the app.
                     </p>
                     <label for="settings-model-choice">Generative Model Choice:</label>
                     <select id="settings-model-choice">
-                        <option value="gemini-3.5-flash">Gemini 3.5 Flash (Super Fast)</option>
-                        <option value="gemini-3.5-pro">Gemini 3.5 Pro (Extremely Smart)</option>
+                        <option value="openai/gpt-oss-20b">openai/gpt-oss-20b (Groq)</option>
+                        <option value="openai/gpt-oss-8b">openai/gpt-oss-8b (Groq)</option>
                     </select>
                 </div>
 
@@ -242,10 +242,11 @@
 
     </div>
 
-    <!-- Cloudflare Worker proxy URL for secure API requests -->
+    <!-- Direct Groq API key for browser requests -->
     <script>
-        // Replace this with your deployed Cloudflare Worker endpoint.
-        window.ROHAN_GPT_API_PROXY = 'https://b3dde937.rohangpt.pages.dev';
+        // Set this to your Groq API key for direct browser requests.
+        // WARNING: exposing the key in static frontend code is insecure for public hosting.
+        window.ROHAN_GPT_API_KEY = 'YOUR_GROQ_API_KEY';
     </script>
     <!-- Application Controller -->
     <script src="app.js" defer></script>

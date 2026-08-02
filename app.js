@@ -4,9 +4,10 @@
    ======================================================== */
 
 const app = {
-    // Generative AI Configuration
-    apiProxyUrl: window.ROHAN_GPT_API_PROXY || 'https://YOUR_WORKER_SUBDOMAIN.workers.dev',
-    geminiModel: 'gemini-3.5-flash',
+    // Groq OpenAI-Compatible API Configuration
+        // NOTE: Do NOT hardcode secrets in source. Use environment or local-only placeholders.
+        apiKey: window.ROHAN_GPT_API_KEY || '',
+    geminiModel: 'openai/gpt-oss-20b',
     temperature: 0.7,
     systemInstruction: '',
     funMode: false,
@@ -305,8 +306,8 @@ const app = {
 
         if (!message) return;
 
-        if (!this.apiProxyUrl || this.apiProxyUrl.includes('YOUR_WORKER_SUBDOMAIN')) {
-            alert('🔧 Please configure your Cloudflare Worker proxy URL in index.html before sending a message.');
+        if (!this.apiKey || this.apiKey === 'YOUR_GROQ_API_KEY') {
+            alert('🔧 Please configure your Groq API key in app.js before sending a message.');
             return;
         }
 
@@ -438,43 +439,56 @@ You are RohanGPT in FUN MODE. You are extremely witty, highly sarcastic, humorou
 
         const finalPrompt = this.buildPrompt(userMessage, chatHistoryContext, systemPromptBlock);
 
-        const response = await fetch(`${this.apiProxyUrl}/stream`, {
+        const response = await fetch('https://api.groq.com/openai/v1/responses', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${this.apiKey}`
             },
             body: JSON.stringify({
                 model: this.geminiModel,
-                prompt: finalPrompt,
+                input: finalPrompt,
                 temperature: this.temperature,
-                maxOutputTokens: 2048
+                max_output_tokens: 1024
             })
         });
 
         if (!response.ok) {
-            const error = await response.json().catch(() => ({}));
-            const errMsg = error.error?.message || error.message || response.statusText || 'API Request Failed';
+            const error = await response.text().catch(() => null);
+            const errMsg = error || response.statusText || 'API Request Failed';
             throw new Error(errMsg);
         }
 
         const json = await response.json();
         let outputText = '';
 
+        // Prefer explicit assistant message blocks when present
         if (json && Array.isArray(json.output)) {
             const messageBlock = json.output.find(item => item.type === 'message');
             if (messageBlock && Array.isArray(messageBlock.content) && messageBlock.content.length > 0) {
                 const firstContent = messageBlock.content[0];
-                outputText = typeof firstContent === 'string' ? firstContent : firstContent.text || '';
+                outputText = typeof firstContent === 'string' ? firstContent : (firstContent.text || '');
             }
         }
 
+        // Fallbacks for other payload shapes
         if (!outputText) {
-            // Fallback for older payload shapes
-            outputText = (json.output || [])
-                .flatMap(item => item.content || [])
-                .map(content => typeof content === 'string' ? content : content.text || '')
-                .join('')
-                .trim();
+            if (typeof json.output_text === 'string') {
+                outputText = json.output_text;
+            } else if (Array.isArray(json.output) && json.output.length > 0) {
+                const firstOutput = json.output[0];
+                if (Array.isArray(firstOutput.content)) {
+                    outputText = firstOutput.content
+                        .map((item) => typeof item === 'string' ? item : item.text || '')
+                        .join('');
+                } else if (typeof firstOutput.content === 'string') {
+                    outputText = firstOutput.content;
+                }
+            } else if (json.choices?.[0]?.message?.content) {
+                outputText = json.choices[0].message.content;
+            } else if (json.choices?.[0]?.text) {
+                outputText = json.choices[0].text;
+            }
         }
 
         if (!outputText) {

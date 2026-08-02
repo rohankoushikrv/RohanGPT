@@ -55,30 +55,23 @@ Open **`http://localhost:3000`** in your browser to start streaming!
 
 ---
 
-## ☁️ Cloudflare Worker Proxy (Secure API Key)
-To protect your Google API key while hosting on GitHub Pages, run a Cloudflare Worker that stores the key securely in an environment variable and proxies browser requests.
+## 🔑 Direct Groq API Key Setup
+RohanGPT can send requests directly to the Groq OpenAI-compatible Responses API from the browser.
 
-### Worker setup
-1. Install Cloudflare Wrangler if needed: `npm install -g wrangler`
-2. Create a new Worker in your Cloudflare account.
-3. Save `worker.js` from this repository into the worker project.
-4. Configure a Worker secret named `GOOGLE_API_KEY`:
-   ```bash
-   wrangler secret put GOOGLE_API_KEY
-   ```
-5. Deploy the worker.
-6. Set `window.ROHAN_GPT_API_PROXY` in `RohanGPT/index.html` to your worker URL.
+### Manual API key setup
+1. Open `RohanGPT/index.html`.
+2. Replace `YOUR_GROQ_API_KEY` in `window.ROHAN_GPT_API_KEY` with your key.
+3. Save and reload the app.
 
-### Why use this proxy?
-- The API key stays inside Cloudflare Worker environment variables.
-- Browser code only sees the proxy endpoint, not the raw secret.
-- GitHub Pages can host the static UI safely.
+### Important
+- This method exposes the key in client-side code.
+- Do not use this approach for public production deployments unless you understand the risk.
 
 ---
 
 ## 🔒 **Privacy & Data Security**
-- **Secure Proxy**: Your API key stays in Cloudflare, not in frontend storage.
-- **Client Requests Only**: The browser sends prompts to the proxy endpoint; the worker forwards them to Google Generative AI.
+- **Direct Browser Requests**: Your API key is stored in the browser code and must be kept private.
+- **Client Requests Only**: The browser sends prompts directly to the Groq API.
 - **LocalStorage Protection**: Your chat history, model selection, temperature, and prompt overrides remain stored only in your browser.
 
 ---
