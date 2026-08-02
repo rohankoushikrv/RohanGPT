@@ -6,7 +6,7 @@
 const app = {
     // Generative AI Configuration
     googleApiKey: null,
-    geminiModel: 'gemini-3.5-flash',
+    geminiModel: 'openai/gpt-oss-20b',
     temperature: 0.7,
     systemInstruction: '',
     funMode: false,
@@ -14,6 +14,7 @@ const app = {
     // Chat Thread Memory State
     activeThreadId: null,
     savedThreads: {}, // Format: { threadId: { id, title, messages: [] } }
+    searchQuery: '',
 
     /* ========== INITIALIZATION ========== */
 
@@ -48,7 +49,7 @@ const app = {
         this.googleApiKey = localStorage.getItem('rohangpt_google_api_key') || '';
         
         // Load settings panel configurations
-        this.geminiModel = localStorage.getItem('rohangpt_model_choice') || 'gemini-3.5-flash';
+        this.geminiModel = localStorage.getItem('rohangpt_model_choice') || 'openai/gpt-oss-20b';
         this.temperature = parseFloat(localStorage.getItem('rohangpt_temperature')) || 0.7;
         this.systemInstruction = localStorage.getItem('rohangpt_system_instruction') || '';
         this.funMode = localStorage.getItem('rohangpt_fun_mode') === 'true';
@@ -126,6 +127,7 @@ const app = {
         const messageInput = document.getElementById('message-input');
         const tempSlider = document.getElementById('settings-temperature');
         const tempDisplay = document.getElementById('temp-val-display');
+        const chatSearchInput = document.getElementById('chat-search-input');
 
         if (messageInput) {
             // Send message on Enter, Shift+Enter for newline
@@ -140,6 +142,13 @@ const app = {
             messageInput.addEventListener('input', () => {
                 messageInput.style.height = 'auto';
                 messageInput.style.height = Math.min(messageInput.scrollHeight, 120) + 'px';
+            });
+        }
+
+        if (chatSearchInput) {
+            chatSearchInput.addEventListener('input', (e) => {
+                this.searchQuery = e.target.value.trim().toLowerCase();
+                this.renderHistoryList();
             });
         }
 
@@ -255,14 +264,23 @@ const app = {
 
         container.innerHTML = '';
         const threadKeys = Object.keys(this.savedThreads);
+        const normalizedQuery = this.searchQuery.trim().toLowerCase();
 
-        if (threadKeys.length === 0) {
-            container.innerHTML = '<p class="empty-history-text">No recent chats</p>';
+        const filteredKeys = normalizedQuery
+            ? threadKeys.filter((key) => {
+                const thread = this.savedThreads[key];
+                return thread.title.toLowerCase().includes(normalizedQuery) ||
+                    thread.messages.some((msg) => msg.content.toLowerCase().includes(normalizedQuery));
+            })
+            : threadKeys;
+
+        if (filteredKeys.length === 0) {
+            container.innerHTML = '<p class="empty-history-text">No matching chats</p>';
             return;
         }
 
         // Render threads from newest to oldest
-        threadKeys.reverse().forEach(key => {
+        filteredKeys.reverse().forEach(key => {
             const thread = this.savedThreads[key];
             
             const item = document.createElement('div');
@@ -291,11 +309,11 @@ const app = {
         const input = document.getElementById('message-input');
         const message = input.value.trim();
 
-        if (!message && !this.attachedFile) return;
+        if (!message) return;
 
         // Verify API Key existence
         if (!this.googleApiKey) {
-            alert('🔑 REQUIRED: Please set your Google Generative AI API key in Settings first!');
+            alert('🔑 REQUIRED: Please set your Groq API key in Settings first!');
             this.openSettingsModal();
             return;
         }
@@ -312,10 +330,7 @@ const app = {
         document.getElementById('send-btn').disabled = true;
 
         // Determine prompt text representation to show the user (just show their prompt + file tag, not raw giant content!)
-        let displayMessage = message;
-        if (this.attachedFile) {
-            displayMessage = `📄 [Attached: ${this.attachedFile.name}]\n\n${message}`;
-        }
+        const displayMessage = message;
 
         // Stage user message to chat UI
         this.addMessageToChat(displayMessage, 'user');
@@ -325,22 +340,12 @@ const app = {
 
         // Update thread title if it was the first message
         if (activeThread.messages.length === 1) {
-            const tempTitle = message ? message : `File: ${this.attachedFile.name}`;
+            const tempTitle = message;
             activeThread.title = tempTitle.substring(0, 30) + (tempTitle.length > 30 ? '...' : '');
             this.renderHistoryList();
         }
 
-        // Formulate final message payload with file text context injected!
-        let messageToSend = message;
-        if (this.attachedFile) {
-            if (this.attachedFile.isText) {
-                messageToSend = `[Attached Text/Code File Content from: ${this.attachedFile.name}]\n\`\`\`\n${this.attachedFile.content}\n\`\`\`\n\nUser Query: ${message}`;
-            } else {
-                messageToSend = `[Attached Binary/Media File from: ${this.attachedFile.name}]\n\nUser Query: ${message}`;
-            }
-            // Clear attachment previews
-            this.removeAttachedFile();
-        }
+        const messageToSend = this.normalizeUserMessage(message);
 
         // Create empty bot container bubble for live streaming
         const chatHistory = document.getElementById('chat-history');
@@ -356,7 +361,7 @@ const app = {
 
                 // Live markup parsing inside bubble
                 contentDiv.innerHTML = this.parseMessageContent(fullText) + '<span class="typing-cursor"></span>';
-                chatHistory.scrollTop = chatHistory.scrollHeight;
+                this.scrollChatToBottom();
             });
 
             // Strip active typing cursor on complete
@@ -370,7 +375,7 @@ const app = {
         } catch (error) {
             this.showLoading(false);
             console.error('Streaming error:', error);
-            contentDiv.innerHTML = `<p style="color: var(--danger); font-weight: 600;">❌ Error: ${error.message}</p><p style="margin-top: 10px; font-size:12px;">Make sure your API key in Settings is active and correct.</p>`;
+            contentDiv.innerHTML = `<p style="color: var(--danger); font-weight: 600;">❌ Error: ${error.message}</p><p style="margin-top: 10px; font-size:12px;">Make sure your Groq API key is set, your selected model is valid, and the Settings entry is correct.</p>`;
         } finally {
             input.disabled = false;
             document.getElementById('send-btn').disabled = false;
@@ -378,11 +383,57 @@ const app = {
         }
     },
 
+    normalizeUserMessage(raw) {
+        if (!raw) return raw;
+
+        let cleaned = raw.trim();
+
+        const explicitUserSays = /(?:the user says|user says)\s*:\s*["“](.*?)["”]/i;
+        const explicitMatch = cleaned.match(explicitUserSays);
+        if (explicitMatch && explicitMatch[1]) {
+            return explicitMatch[1].trim();
+        }
+
+        const explicitNoQuotes = /(?:the user says|user says)\s*:\s*([^"“”\n]+)/i;
+        const explicitNoQuotesMatch = cleaned.match(explicitNoQuotes);
+        if (explicitNoQuotesMatch && explicitNoQuotesMatch[1]) {
+            return explicitNoQuotesMatch[1].trim();
+        }
+
+        const quotedMatches = Array.from(cleaned.matchAll(/["“](.*?)["”]/g), m => m[1].trim()).filter(Boolean);
+        if (quotedMatches.length > 0) {
+            const markerIndex = cleaned.search(/(?:the user says|user says)/i);
+            if (markerIndex >= 0) {
+                let afterMarker = cleaned.slice(markerIndex);
+                const firstQuotedAfterMarker = Array.from(afterMarker.matchAll(/["“](.*?)["”]/g), m => m[1].trim()).filter(Boolean)[0];
+                if (firstQuotedAfterMarker) {
+                    return firstQuotedAfterMarker;
+                }
+            }
+
+            return quotedMatches[0];
+        }
+
+        cleaned = cleaned
+            .replace(/^(?:No no no|no no no|Please|please)[\s\S]*?(?=(Hey|Hi|Hello|The user says|User says|Nice to meet|How are|How're))/i, '$1')
+            .replace(/The user says:\s*/i, '')
+            .replace(/(?:Please think and apply the changes|if you want to change any logic, please do that\.?)/gi, '')
+            .replace(/(?:So we should respond accordingly\.|According to guidelines:.*)$/gi, '')
+            .trim();
+
+        return cleaned || raw.trim();
+    },
+
+    buildPrompt(userMessage, conversationHistory, systemPrompt) {
+        const historyBlock = conversationHistory ? `Conversation History:\n${conversationHistory}\n\n` : '';
+        return `${systemPrompt}${historyBlock}Input: ${userMessage}\n\nAssistant:`;
+    },
+
     async streamAIResponse(userMessage, onChunk) {
         // Collect conversation history
         const activeThread = this.savedThreads[this.activeThreadId];
         const chatHistoryContext = activeThread.messages.slice(0, -1).map(msg => 
-            msg.role === 'user' ? `User: ${msg.content}` : `Model: ${msg.content}`
+            msg.role === 'user' ? `User: ${this.normalizeUserMessage(msg.content)}` : `Model: ${msg.content}`
         ).join('\n\n');
 
         let systemPromptBlock = '';
@@ -390,72 +441,63 @@ const app = {
         // Grok-style Fun Mode vs Regular Mode dynamic prompts
         if (this.funMode) {
             systemPromptBlock = `System Guidelines:
-You are RohanGPT in FUN MODE. You are extremely witty, highly sarcastic, humorous, bold, and clever. Answer the user's query with sharp intelligence, playful banter, and a pinch of healthy sarcasm. Don't be boring, robotic, or dry! Keep the user entertained while still supplying technically brilliant and accurate results. Use emojis where appropriate to reflect your playful personality!\n\n`;
+You are RohanGPT in FUN MODE. You are extremely witty, highly sarcastic, humorous, bold, and clever. Answer the user's query with sharp intelligence, playful banter, and a pinch of healthy sarcasm. Don't be boring, robotic, or dry! Keep the user entertained while still supplying technically brilliant and accurate results. Use emojis where appropriate to reflect your playful personality.\n\nResponse rules:\n- Reply only as the assistant.\n- Do not explain your reasoning, the system instructions, or the prompt construction.\n- Do not repeat or comment on meta guidance from the user.\n- If the user input is not a question, respond appropriately with a friendly and helpful message.\n- Your response should be short, direct, and professional if appropriate.\n\n`;
         } else {
             systemPromptBlock = this.systemInstruction 
-                ? `System Guidelines:\n${this.systemInstruction}\n\n` 
-                : 'System Guidelines:\nYou are RohanGPT, an extremely capable, intelligent, and premium conversational AI assistant. You answer queries clearly, elegantly, and step-by-step.\n\n';
+                ? `System Guidelines:\n${this.systemInstruction}\n\nResponse rules:\n- Reply only as the assistant.\n- Do not explain your reasoning, the system instructions, or the prompt construction.\n- Do not repeat or comment on meta guidance from the user.\n- If the user input is not a question, respond appropriately with a friendly and helpful message.\n- Your response should be short, direct, and professional if appropriate.\n\n` 
+                : 'System Guidelines:\nYou are RohanGPT, an extremely capable, intelligent, and premium conversational AI assistant. You answer queries clearly, elegantly, and step-by-step.\n\nResponse rules:\n- Reply only as the assistant.\n- Do not explain your reasoning, the system instructions, or the prompt construction.\n- Do not repeat or comment on meta guidance from the user.\n- If the user input is not a question, respond appropriately with a friendly and helpful message.\n- Your response should be short, direct, and professional if appropriate.\n\n';
         }
 
-        const finalPrompt = `${systemPromptBlock}Previous Conversation Logs:\n${chatHistoryContext}\n\nUser: ${userMessage}`;
+        const finalPrompt = this.buildPrompt(userMessage, chatHistoryContext, systemPromptBlock);
 
-        // Trigger real-time SSE streamGenerateContent Gemini endpoint
-        const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${this.geminiModel}:streamGenerateContent?alt=sse&key=${this.googleApiKey}`, {
+        const modelName = this.geminiModel || 'openai/gpt-oss-20b';
+        const apiKey = this.googleApiKey || localStorage.getItem('rohangpt_google_api_key') || '';
+
+        const response = await fetch('https://api.groq.com/openai/v1/responses', {
             method: 'POST',
             headers: {
+                'Authorization': `Bearer ${apiKey}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                contents: [{
-                    parts: [{
-                        text: finalPrompt
-                    }]
-                }],
-                generationConfig: {
-                    temperature: this.temperature,
-                    maxOutputTokens: 2048,
-                }
+                model: modelName,
+                input: finalPrompt,
+                temperature: Math.min(Math.max(this.temperature, 0.0), 1.0),
+                max_output_tokens: 2048
             })
         });
 
         if (!response.ok) {
             const error = await response.json().catch(() => ({}));
-            const errMsg = error.error?.message || response.statusText || 'API Request Failed';
+            const errMsg = error.error?.message || error.message || response.statusText || 'API Request Failed';
             throw new Error(errMsg);
         }
 
-        const reader = response.body.getReader();
-        const decoder = new TextDecoder('utf-8');
-        let buffer = '';
+        const json = await response.json();
+        let outputText = '';
 
-        while (true) {
-            const { value, done } = await reader.read();
-            if (done) break;
-
-            buffer += decoder.decode(value, { stream: true });
-            const lines = buffer.split('\n');
-            buffer = lines.pop(); // Hold incomplete last packet inside buffer
-
-            for (const line of lines) {
-                const trimmed = line.trim();
-                if (!trimmed) continue;
-
-                if (trimmed.startsWith('data:')) {
-                    const dataStr = trimmed.substring(5).trim();
-                    if (!dataStr) continue;
-
-                    try {
-                        const parsed = JSON.parse(dataStr);
-                        const chunkText = parsed.candidates?.[0]?.content?.parts?.[0]?.text;
-                        if (chunkText) {
-                            onChunk(chunkText);
-                        }
-                    } catch (e) {
-                        console.error('SSE packet parsing failure:', e);
-                    }
-                }
+        if (json && Array.isArray(json.output)) {
+            const messageBlock = json.output.find(item => item.type === 'message');
+            if (messageBlock && Array.isArray(messageBlock.content) && messageBlock.content.length > 0) {
+                const firstContent = messageBlock.content[0];
+                outputText = typeof firstContent === 'string' ? firstContent : firstContent.text || '';
             }
         }
+
+        if (!outputText) {
+            // Fallback for older payload shapes
+            outputText = (json.output || [])
+                .flatMap(item => item.content || [])
+                .map(content => typeof content === 'string' ? content : content.text || '')
+                .join('')
+                .trim();
+        }
+
+        if (!outputText) {
+            throw new Error('No response content returned from Groq API.');
+        }
+
+        onChunk(outputText);
     },
 
     /* ========== AUTOMATIONS WORKFLOWS ========== */
@@ -488,76 +530,12 @@ You are RohanGPT in FUN MODE. You are extremely witty, highly sarcastic, humorou
         input.style.height = Math.min(input.scrollHeight, 120) + 'px';
     },
 
-    triggerFileAttach() {
-        const fileInput = document.getElementById('file-attachment-input');
-        if (fileInput) fileInput.click();
-    },
-
-    handleFileAttach(inputElement) {
-        const file = inputElement.files[0];
-        if (!file) return;
-
-        const reader = new FileReader();
-        
-        // We read textual / code files as text, and others as Base64/data URLs
-        const isText = file.type.startsWith('text/') || 
-                       file.name.endsWith('.js') || 
-                       file.name.endsWith('.ts') || 
-                       file.name.endsWith('.py') || 
-                       file.name.endsWith('.html') || 
-                       file.name.endsWith('.css') || 
-                       file.name.endsWith('.json') || 
-                       file.name.endsWith('.md') ||
-                       file.name.endsWith('.txt');
-
-        reader.onload = (e) => {
-            this.attachedFile = {
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                content: e.target.result,
-                isText: isText
-            };
-
-            // Display file preview card
-            const container = document.getElementById('attachment-preview-container');
-            const nameSpan = document.getElementById('attached-file-name');
-            const sizeSpan = document.getElementById('attached-file-size');
-
-            if (container && nameSpan && sizeSpan) {
-                nameSpan.textContent = file.name;
-                
-                // Format file size nicely
-                const kb = (file.size / 1024).toFixed(1);
-                sizeSpan.textContent = kb + ' KB';
-                
-                container.style.display = 'flex';
-            }
-        };
-
-        if (isText) {
-            reader.readAsText(file);
-        } else {
-            // Fallback: read image/binary files as data URL
-            reader.readAsDataURL(file);
-        }
-    },
-
-    removeAttachedFile() {
-        this.attachedFile = null;
-        
-        const fileInput = document.getElementById('file-attachment-input');
-        if (fileInput) fileInput.value = ''; // Reset input
-
-        const container = document.getElementById('attachment-preview-container');
-        if (container) container.style.display = 'none';
-    },
-
     /* ========== UI CONTROLLER HELPER FUNCTIONS ========== */
 
     addMessageToChat(text, sender, scroll = true, isStreaming = false) {
         const chatHistory = document.getElementById('chat-history');
-        if (!chatHistory) return;
+        const chatWorkspace = document.querySelector('.chat-workspace');
+        if (!chatHistory || !chatWorkspace) return;
 
         const msgDiv = document.createElement('div');
         msgDiv.className = `chat-message ${sender}-message`;
@@ -582,7 +560,7 @@ You are RohanGPT in FUN MODE. You are extremely witty, highly sarcastic, humorou
 
         if (scroll) {
             setTimeout(() => {
-                chatHistory.scrollTop = chatHistory.scrollHeight;
+                chatWorkspace.scrollTo({ top: chatWorkspace.scrollHeight, behavior: 'smooth' });
             }, 50);
         }
 
@@ -615,19 +593,23 @@ You are RohanGPT in FUN MODE. You are extremely witty, highly sarcastic, humorou
         return html;
     },
 
+    scrollChatToBottom() {
+        const chatWorkspace = document.querySelector('.chat-workspace');
+        if (!chatWorkspace) return;
+        chatWorkspace.scrollTo({ top: chatWorkspace.scrollHeight, behavior: 'smooth' });
+    },
+
     showLoading(show) {
-        // Toggle opacity or visibility elements if needed
-        const badge = document.querySelector('.model-badge-container');
-        if (badge) {
-            if (show) {
-                badge.style.borderColor = 'var(--primary-color)';
-                badge.querySelector('.model-status-dot').style.backgroundColor = 'var(--primary-light)';
-                badge.querySelector('.model-status-dot').style.boxShadow = '0 0 10px var(--primary-light)';
-            } else {
-                badge.style.borderColor = 'var(--border-glass)';
-                badge.querySelector('.model-status-dot').style.backgroundColor = 'var(--success)';
-                badge.querySelector('.model-status-dot').style.boxShadow = '0 0 8px var(--success)';
-            }
+        const generateBadge = document.getElementById('generative-badge');
+        const sendBtn = document.getElementById('send-btn');
+
+        if (generateBadge) {
+            generateBadge.classList.toggle('active', show);
+            generateBadge.textContent = show ? '⚡ Generating...' : '';
+        }
+
+        if (sendBtn) {
+            sendBtn.disabled = show;
         }
     },
 
@@ -648,8 +630,6 @@ You are RohanGPT in FUN MODE. You are extremely witty, highly sarcastic, humorou
                 sidebar.classList.toggle('active');
                 if (overlay) overlay.classList.toggle('active');
             }
-        }
-    },
         }
     },
 

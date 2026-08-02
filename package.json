@@ -1,7 +1,7 @@
 {
   "name": "rohangpt",
   "version": "1.0.0",
-  "description": "RohanGPT — Modern Conversational Streaming AI Assistant using Google Gemini API",
+  "description": "RohanGPT — Modern Conversational AI Assistant using Groq OpenAI-compatible responses API",
   "main": "app.js",
   "type": "module",
   "scripts": {
@@ -14,8 +14,8 @@
   },
   "keywords": [
     "RohanGPT",
-    "gemini-streaming",
-    "gemini-api",
+    "groq-api",
+    "openai-gpt-oss",
     "copilot-style-ui",
     "ai-assistant"
   ],

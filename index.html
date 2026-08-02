@@ -50,6 +50,11 @@
                 <span class="plus-icon">+</span> New Chat
             </button>
 
+            <div class="sidebar-search">
+                <div class="search-icon">🔎</div>
+                <input id="chat-search-input" type="search" placeholder="Search chats" aria-label="Search recent chat threads">
+            </div>
+
             <!-- Chat Threads History list -->
             <div class="sidebar-section history-section">
                 <div class="section-title">Recent</div>
@@ -85,12 +90,7 @@
                     </div>
                 </div>
 
-                <!-- Grok-style Fun Mode Toggle in the Header -->
                 <div class="header-right">
-                    <div class="mode-toggle-pill" id="mode-toggle-pill" onclick="app.toggleFunMode()">
-                        <span class="mode-label active" id="regular-mode-label">Regular</span>
-                        <span class="mode-label" id="fun-mode-label">😜 Fun</span>
-                    </div>
                 </div>
             </header>
 
@@ -174,42 +174,18 @@
             <!-- Floating Grok-style Input Area at the bottom center -->
             <footer class="input-bar-container">
                 <div class="grok-input-box">
-                    <!-- File attachment preview container (interactive and clean!) -->
-                    <div class="attachment-preview-container" id="attachment-preview-container" style="display: none; align-items: center; gap: 10px; background-color: var(--bg-tertiary); border: 1px solid var(--border-thin); padding: 8px 12px; border-radius: var(--radius-sm); margin-bottom: 12px; max-width: max-content;">
-                        <span style="font-size: 14px;">📄</span>
-                        <span id="attached-file-name" style="font-size: 13px; font-weight: 500; color: var(--text-primary); max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">filename.txt</span>
-                        <span id="attached-file-size" style="font-size: 11px; color: var(--text-tertiary);">1.2 KB</span>
-                        <button onclick="app.removeAttachedFile()" style="background: none; border: none; color: var(--text-tertiary); cursor: pointer; font-size: 14px; margin-left: 6px; padding: 2px; line-height: 1;" title="Remove attachment">✕</button>
-                    </div>
-
-                    <textarea 
-                        id="message-input" 
-                        placeholder="Ask anything..." 
-                        rows="1" 
-                        aria-label="Type your message here to stream RohanGPT responses"
-                    ></textarea>
-                    
-                    <div class="input-controls-row">
-                        <div class="left-controls">
-                            <button class="control-btn" onclick="app.triggerFileAttach()" title="Add file attachment">
-                                📎
-                            </button>
-                            <button class="control-btn" onclick="app.openSettingsModal()" title="Configure Parameters">
-                                ⚙️
-                            </button>
-                        </div>
-                        
-                        <div class="right-controls">
-                            <!-- Dynamic Live Status Indicator (Regular vs Fun Mode) -->
-                            <span class="grok-status-badge" id="grok-status-badge">Regular Mode</span>
-                            <button id="send-btn" class="send-grok-btn" onclick="app.sendMessage()" aria-label="Send message to RohanGPT">
-                                <span class="send-arrow">→</span>
-                            </button>
-                        </div>
+                    <div class="input-row">
+                        <textarea 
+                            id="message-input" 
+                            placeholder="Ask anything…" 
+                            rows="1" 
+                            aria-label="Type your message here to chat with RohanGPT"
+                        ></textarea>
+                        <button id="send-btn" class="send-grok-btn" onclick="app.sendMessage()" aria-label="Send message to RohanGPT">
+                            <span class="send-arrow">→</span>
+                        </button>
                     </div>
                 </div>
-                <!-- Hidden file input element -->
-                <input type="file" id="file-attachment-input" onchange="app.handleFileAttach(this)" style="display: none;">
                 
                 <div class="grok-footer-disclaimer">
                     <span>RohanGPT can make mistakes. Verify critical responses.</span>
@@ -224,16 +200,15 @@
                 <h2 id="modal-title">⚙️ Configure RohanGPT</h2>
                 
                 <div class="setting-group">
-                    <label for="settings-api-key">Google Gemini API Key:</label>
-                    <input type="password" id="settings-api-key" placeholder="AQ.Ab8RN6..." aria-label="Google API key input">
+                    <label for="settings-api-key">Groq API Key:</label>
+                    <input type="password" id="settings-api-key" placeholder="sk-..." aria-label="Groq API key input">
                     <small class="settings-help">Stored locally inside your browser's LocalStorage only.</small>
                 </div>
 
                 <div class="setting-group">
                     <label for="settings-model-choice">Generative Model Choice:</label>
                     <select id="settings-model-choice">
-                        <option value="gemini-3.5-flash">Gemini 3.5 Flash (Super Fast)</option>
-                        <option value="gemini-3.5-pro">Gemini 3.5 Pro (Extremely Smart)</option>
+                        <option value="openai/gpt-oss-20b">openai/gpt-oss-20b</option>
                     </select>
                 </div>
 
